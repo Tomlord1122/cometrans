@@ -46,7 +46,7 @@ public enum ShortcutCatalog {
             name: "Translate",
             keyCode: 31,
             modifiers: 768,
-            prompt: "Detect the language of the following text. If it is Spanish, translate it to English. If it is English, translate it to Spanish. Output only the translated text without any explanations.",
+            prompt: "Translate the following text to natural, fluent English. If it is already in English, polish it for clarity while preserving the original meaning. Output only the translated text without any explanations, quotation marks, or commentary.",
             providerOverride: .appleIntelligence
         ),
         ShortcutTemplate(
