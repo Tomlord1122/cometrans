@@ -7,7 +7,9 @@ final class AIProviderTests: XCTestCase {
             "OpenAI (GPT)",
             "Anthropic (Claude)",
             "Google (Gemini)",
-            "xAI (Grok)"
+            "xAI (Grok)",
+            "opencode",
+            "Apple Intelligence (on-device)"
         ])
         XCTAssertEqual(AIProviderType.openai.id, "openai")
         XCTAssertTrue(AIProviderType.claude.apiKeyURL.contains("anthropic"))
@@ -132,7 +134,7 @@ final class AIProviderTests: XCTestCase {
         assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.serverError(500)))
 
         let request = try XCTUnwrap(client.requests.last)
-        XCTAssertTrue(request.url?.absoluteString.contains("models/gemini-1.5-flash:generateContent?key=key") == true)
+        XCTAssertTrue(request.url?.absoluteString.contains("models/gemini-2.5-flash:generateContent?key=key") == true)
     }
 
     func testGrokProviderRequestAndResponses() throws {

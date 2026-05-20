@@ -27,7 +27,8 @@ final class AppControllerTests: XCTestCase {
         let clipboard = MockClipboardService()
         let hotKeys = MockHotKeyManager()
         let controller = AppController(settings: settings, clipboardService: clipboard, hotKeyManager: hotKeys)
-        let action = settings.shortcutActions[0]
+        let action = ShortcutAction(name: "Test", keyCode: 31, modifiers: 768, prompt: "do thing")
+        settings.shortcutActions = [action]
 
         clipboard.permissionGranted = false
         controller.processSelection(with: action)
@@ -55,7 +56,8 @@ final class AppControllerTests: XCTestCase {
         clipboard.copiedText = "Hola"
         let hotKeys = MockHotKeyManager()
         let controller = AppController(settings: settings, clipboardService: clipboard, hotKeyManager: hotKeys)
-        let action = settings.shortcutActions[0]
+        let action = ShortcutAction(name: "Test", keyCode: 31, modifiers: 768, prompt: "do thing")
+        settings.shortcutActions = [action]
         let expectation = expectation(description: "process")
 
         provider.nextResult = .success("Hello")
