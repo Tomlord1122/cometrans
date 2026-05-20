@@ -23,8 +23,14 @@ public final class AppleIntelligenceProvider: AIProvider {
             Task {
                 do {
                     let model = SystemLanguageModel.default
-                    guard case .available = model.availability else {
-                        completion(.failure(.unknown("Apple Intelligence is not available on this device.")))
+                    switch model.availability {
+                    case .available:
+                        break
+                    case .unavailable(let reason):
+                        completion(.failure(.unknown(Self.message(for: reason))))
+                        return
+                    @unknown default:
+                        completion(.failure(.unknown("Apple Intelligence availability is unknown.")))
                         return
                     }
 
@@ -37,7 +43,7 @@ public final class AppleIntelligenceProvider: AIProvider {
                         completion(.success(output))
                     }
                 } catch {
-                    completion(.failure(.unknown(error.localizedDescription)))
+                    completion(.failure(.unknown("Apple Intelligence error: \(error.localizedDescription)")))
                 }
             }
             return
@@ -45,4 +51,20 @@ public final class AppleIntelligenceProvider: AIProvider {
         #endif
         completion(.failure(.unknown("Apple Intelligence requires macOS 26 (Tahoe) or later with Apple Silicon.")))
     }
+
+    #if canImport(FoundationModels)
+    @available(macOS 26.0, *)
+    private static func message(for reason: SystemLanguageModel.Availability.UnavailableReason) -> String {
+        switch reason {
+        case .deviceNotEligible:
+            return "Apple Intelligence isn't supported on this Mac (needs Apple Silicon M-series)."
+        case .appleIntelligenceNotEnabled:
+            return "Apple Intelligence is turned off. Enable it in System Settings → Apple Intelligence & Siri."
+        case .modelNotReady:
+            return "Apple Intelligence model is still downloading. Check progress in System Settings → Apple Intelligence & Siri."
+        @unknown default:
+            return "Apple Intelligence unavailable (reason: \(reason))."
+        }
+    }
+    #endif
 }
