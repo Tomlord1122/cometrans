@@ -14,7 +14,15 @@ struct ShortcutEditView: View {
     }
 
     private var validationMessages: [String] {
-        draft.validationMessages(existingActions: settings.shortcutActions, editingID: selectedAction?.id)
+        draft.validationMessages(
+            existingActions: settings.shortcutActions,
+            editingID: selectedAction?.id,
+            requiresPrompt: false
+        )
+    }
+
+    private var effectiveProvider: AIProviderType {
+        draft.providerOverride ?? settings.selectedProvider
     }
 
     private var hasUnsavedChanges: Bool {
@@ -181,11 +189,11 @@ struct ShortcutEditView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Section("AI Instructions") {
+                Section(effectiveProvider == .appleTranslation ? "Translation Instructions" : "AI Instructions") {
                     TextEditor(text: $draft.prompt)
                         .font(.body)
                         .frame(minHeight: 220)
-                    Text("The selected text will be sent with these instructions. Keep the output format explicit so replacements paste cleanly.")
+                    Text(instructionsHelpText)
                         .foregroundStyle(.secondary)
                 }
 
@@ -218,6 +226,14 @@ struct ShortcutEditView: View {
             get: { draft.providerOverride },
             set: { draft.providerOverride = $0 }
         )
+    }
+
+    private var instructionsHelpText: String {
+        if effectiveProvider == .appleTranslation {
+            return "Apple Translation is promptless, so these instructions are optional and ignored. Leave this blank for the default English ↔ Traditional Chinese behavior."
+        }
+
+        return "The selected text will be sent with these optional instructions. Keep the output format explicit so replacements paste cleanly."
     }
 
     private var selectionBinding: Binding<ShortcutAction.ID?> {

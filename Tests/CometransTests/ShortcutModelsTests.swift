@@ -14,11 +14,15 @@ final class ShortcutModelsTests: XCTestCase {
         let second = ShortcutAction(name: "Two", keyCode: 31, modifiers: 768, prompt: "Other")
         let third = ShortcutAction(name: "Three", keyCode: 34, modifiers: 768, prompt: "Other")
         let unknown = ShortcutAction(name: "Four", keyCode: 777, modifiers: 256, prompt: "Other")
+        let unset = ShortcutAction(name: "Blank", keyCode: 0, modifiers: 0, prompt: "")
 
         XCTAssertTrue(first.usesSameShortcut(as: second))
         XCTAssertFalse(first.usesSameShortcut(as: third))
+        XCTAssertFalse(unset.usesSameShortcut(as: unset))
         XCTAssertNil(ShortcutAction.keyCodeToName(777))
         XCTAssertEqual(unknown.shortcutDescription, "Cmd+Key(777)")
+        XCTAssertEqual(unset.shortcutDescription, "Not set")
+        XCTAssertEqual(unset.shortcutComponents, [])
     }
 
     func testShortcutCatalogDefaultsAndTemplates() {
@@ -55,6 +59,15 @@ final class ShortcutModelsTests: XCTestCase {
             ["Name is required.", "Instructions are required.", "Shortcut modifiers are required."]
         )
         XCTAssertEqual(form.shortcutPreview, "Not set")
+    }
+
+    func testShortcutActionFormAllowsMissingPromptWhenPromptIsNotRequired() {
+        let form = ShortcutActionForm(name: "Translate", keyCode: 31, modifiers: 768, prompt: "")
+
+        XCTAssertEqual(
+            form.validationMessages(existingActions: [], editingID: nil, requiresPrompt: false),
+            []
+        )
     }
 
     func testShortcutActionFormInitFromAction() {

@@ -43,7 +43,7 @@ final class AppControllerTests: XCTestCase {
         settings.setAPIKey("key", for: .openai)
         clipboard.copiedText = nil
         controller.processSelection(with: action)
-        XCTAssertEqual(controller.state, .failed("No text selection was found."))
+        XCTAssertEqual(controller.state, .idle)
     }
 
     func testProcessSelectionSuccessAndHotKeyTrigger() {

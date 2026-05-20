@@ -43,10 +43,14 @@ public struct ShortcutAction: Codable, Identifiable, Equatable {
     }
 
     public var shortcutDescription: String {
-        shortcutComponents.joined(separator: "+")
+        guard isShortcutSet else { return "Not set" }
+
+        return shortcutComponents.joined(separator: "+")
     }
 
     public var shortcutComponents: [String] {
+        guard isShortcutSet else { return [] }
+
         var parts: [String] = []
 
         if modifiers & 4096 != 0 { parts.append("Control") }
@@ -59,7 +63,13 @@ public struct ShortcutAction: Codable, Identifiable, Equatable {
     }
 
     public func usesSameShortcut(as other: ShortcutAction) -> Bool {
-        keyCode == other.keyCode && modifiers == other.modifiers
+        guard isShortcutSet && other.isShortcutSet else { return false }
+
+        return keyCode == other.keyCode && modifiers == other.modifiers
+    }
+
+    public var isShortcutSet: Bool {
+        keyCode != 0 || modifiers != 0
     }
 
     public static func keyCodeToName(_ code: UInt32) -> String? {

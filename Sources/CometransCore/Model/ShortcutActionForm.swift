@@ -49,14 +49,18 @@ public struct ShortcutActionForm: Equatable {
         ).shortcutDescription
     }
 
-    public func validationMessages(existingActions: [ShortcutAction], editingID: UUID?) -> [String] {
+    public func validationMessages(
+        existingActions: [ShortcutAction],
+        editingID: UUID?,
+        requiresPrompt: Bool = true
+    ) -> [String] {
         var messages: [String] = []
 
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             messages.append("Name is required.")
         }
 
-        if prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if requiresPrompt && prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             messages.append("Instructions are required.")
         }
 
