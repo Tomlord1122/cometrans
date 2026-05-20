@@ -48,6 +48,8 @@ jobs:
     name: Build
     needs: prepare
     runs-on: macos-26
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.4.app/Contents/Developer
 
     steps:
       - name: Checkout
