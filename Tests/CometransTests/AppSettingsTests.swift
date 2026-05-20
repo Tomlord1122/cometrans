@@ -1,5 +1,5 @@
 import XCTest
-@testable import FluentCore
+@testable import CometransCore
 
 final class AppSettingsTests: XCTestCase {
     private var userDefaults: UserDefaults!
@@ -7,7 +7,7 @@ final class AppSettingsTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        suiteName = "FluentAppTests.\(UUID().uuidString)"
+        suiteName = "CometransTests.\(UUID().uuidString)"
         userDefaults = UserDefaults(suiteName: suiteName)!
         userDefaults.removePersistentDomain(forName: suiteName)
     }

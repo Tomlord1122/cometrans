@@ -1,5 +1,5 @@
 import XCTest
-@testable import FluentCore
+@testable import CometransCore
 
 final class AppControllerTests: XCTestCase {
     func testInitBindsHotKeysAndRebindsOnSettingsChange() {
@@ -155,6 +155,6 @@ final class AppControllerTests: XCTestCase {
         clipboard.permissionGranted = true
         controller.pasteErrorMessageIfPossible("Missing API key")
         XCTAssertEqual(clipboard.promptedValues, [false, false])
-        XCTAssertEqual(clipboard.pastedTexts, ["Fluent App Error: Missing API key"])
+        XCTAssertEqual(clipboard.pastedTexts, ["Cometrans Error: Missing API key"])
     }
 }

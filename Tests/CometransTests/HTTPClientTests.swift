@@ -1,5 +1,5 @@
 import XCTest
-@testable import FluentCore
+@testable import CometransCore
 
 final class HTTPClientTests: XCTestCase {
     override func tearDown() {

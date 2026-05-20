@@ -1,6 +1,6 @@
 import Carbon
 import Cocoa
-import FluentCore
+import CometransCore
 
 public final class LiveHotKeyManager: ObservableObject, HotKeyManaging {
     public static let shared = LiveHotKeyManager()

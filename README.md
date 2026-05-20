@@ -1,12 +1,12 @@
-# Fluent App
+# Cometrans
 
-Fluent App is a native macOS menu bar app for AI-powered text shortcuts. Select text anywhere, trigger a global shortcut, and Fluent App rewrites, translates, summarizes, or transforms the text and pastes the result back.
+Cometrans is a native macOS menu bar app for AI-powered text shortcuts. Select text anywhere, trigger a global shortcut, and Cometrans rewrites, translates, summarizes, or transforms the text and pastes the result back.
 
 ## What Changed
 
 - Dedicated settings window instead of editing inside the menu bar popover.
 - Shortcut management rebuilt around reusable templates and a persistent editor.
-- Core logic moved into a testable `FluentCore` module.
+- Core logic moved into a testable `CometransCore` module.
 - Build, release, signing, notarization, and coverage commands standardized.
 - GitHub Actions prepared for CI, releases, and Apple-signed distribution.
 
@@ -63,14 +63,14 @@ Requirements:
 Run locally:
 
 ```bash
-swift run FluentApp
+swift run Cometrans
 ```
 
 ## Installation Flow
 
 1. Download the latest DMG from GitHub Releases.
-2. Drag `Fluent App.app` to `/Applications`.
-3. Launch Fluent App.
+2. Drag `Cometrans.app` to `/Applications`.
+3. Launch Cometrans.
 4. Grant Accessibility access in System Settings.
 5. Add an API key for your preferred provider.
 6. Configure or add shortcuts in the Settings window.
@@ -126,16 +126,16 @@ What you still need to do manually outside this repo:
 
 The package is split intentionally:
 
-- `FluentCore`: models, providers, settings logic, controller logic, testable contracts.
-- `FluentMacSupport`: live macOS integrations for clipboard, hotkeys, launch at login.
-- `FluentApp`: SwiftUI shell and settings UI.
+- `CometransCore`: models, providers, settings logic, controller logic, testable contracts.
+- `CometransMacSupport`: live macOS integrations for clipboard, hotkeys, launch at login.
+- `Cometrans`: SwiftUI shell and settings UI.
 
 This makes new shortcuts easy to add without touching the live platform adapters.
 
 ## Privacy
 
 - API keys stay local on your Mac.
-- Text goes directly from Fluent App to the provider you selected.
+- Text goes directly from Cometrans to the provider you selected.
 - No analytics, telemetry, or remote app backend is included.
 
 ## Website

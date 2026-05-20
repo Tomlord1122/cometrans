@@ -1,13 +1,13 @@
 import AppKit
 import Combine
-import FluentCore
-import FluentMacSupport
+import CometransCore
+import CometransMacSupport
 import Sparkle
 import SwiftUI
 import UserNotifications
 
 @main
-struct FluentApp: App {
+struct CometransApp: App {
     @StateObject private var controller: AppController
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
@@ -137,7 +137,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         menu.addItem(.separator())
-        let quitItem = NSMenuItem(title: "Quit Fluent App", action: #selector(quit), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "Quit Cometrans", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
     }
@@ -158,7 +158,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let hostingController = NSHostingController(rootView: settingsView)
 
         let window = NSWindow(contentViewController: hostingController)
-        window.title = "Fluent App Settings"
+        window.title = "Cometrans Settings"
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
         window.setContentSize(NSSize(width: 920, height: 680))
         window.center()
@@ -189,7 +189,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         switch state {
         case .failed(let message):
             notifyOrFallback(
-                title: "Fluent App Error",
+                title: "Cometrans Error",
                 body: message,
                 fallbackMessage: message,
                 sound: true
@@ -239,13 +239,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func tooltip(for state: AppController.State) -> String {
         switch state {
         case .idle:
-            return "Fluent App"
+            return "Cometrans"
         case .processing(let actionName):
-            return "Fluent App: \(actionName)"
+            return "Cometrans: \(actionName)"
         case .completed(let actionName):
-            return "Fluent App: \(actionName) completed"
+            return "Cometrans: \(actionName) completed"
         case .failed(let message):
-            return "Fluent App error: \(message)"
+            return "Cometrans error: \(message)"
         }
     }
 

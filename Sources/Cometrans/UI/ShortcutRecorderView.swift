@@ -1,5 +1,5 @@
 import Carbon
-import FluentCore
+import CometransCore
 import SwiftUI
 
 struct ShortcutRecorderView: View {

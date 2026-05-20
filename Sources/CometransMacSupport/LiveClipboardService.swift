@@ -1,6 +1,6 @@
 import AppKit
 import ApplicationServices
-import FluentCore
+import CometransCore
 
 public final class LiveClipboardService: ClipboardServicing {
     public init() {}

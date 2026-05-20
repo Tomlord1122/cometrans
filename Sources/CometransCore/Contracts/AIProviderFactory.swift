@@ -26,7 +26,7 @@ public final class AIProviderFactory {
             .gemini: { GeminiProvider(model: $0) },
             .grok: { GrokProvider(model: $0) },
             .opencode: { OpencodeProvider(model: $0) }
-            // .appleIntelligence is registered from FluentMacSupport at app startup,
+            // .appleIntelligence is registered from CometransMacSupport at app startup,
             // since it depends on the FoundationModels framework.
         ]
     }

@@ -1,4 +1,4 @@
-import FluentCore
+import CometransCore
 import Foundation
 #if canImport(FoundationModels)
 import FoundationModels

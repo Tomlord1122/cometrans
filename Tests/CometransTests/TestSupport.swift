@@ -1,5 +1,5 @@
 import Foundation
-@testable import FluentCore
+@testable import CometransCore
 
 final class MockHTTPClient: HTTPClient {
     var requests: [URLRequest] = []

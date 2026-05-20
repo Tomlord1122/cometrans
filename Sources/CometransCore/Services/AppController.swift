@@ -97,7 +97,7 @@ public final class AppController: ObservableObject {
             return
         }
 
-        clipboardService.pasteText("Fluent App Error: \(message)")
+        clipboardService.pasteText("Cometrans Error: \(message)")
     }
 
     private func bindHotKeys() {

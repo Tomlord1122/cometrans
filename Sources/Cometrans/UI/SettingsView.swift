@@ -1,4 +1,4 @@
-import FluentCore
+import CometransCore
 import SwiftUI
 
 struct SettingsView: View {
@@ -31,7 +31,7 @@ struct SettingsView: View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text("Fluent App")
+                    Text("Cometrans")
                         .font(.largeTitle)
                         .fontWeight(.semibold)
                     if let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
@@ -55,7 +55,7 @@ struct SettingsView: View {
 
                 Divider()
 
-                Button("Quit Fluent App") {
+                Button("Quit Cometrans") {
                     NSApplication.shared.terminate(nil)
                 }
             } label: {
@@ -73,7 +73,7 @@ struct SettingsView: View {
                     get: { controller.settings.launchAtStartup },
                     set: { controller.settings.launchAtStartup = $0 }
                 ))
-                Text("Fluent App lives in the menu bar, captures selected text with a shortcut, sends it to your chosen model, and pastes the result back.")
+                Text("Cometrans lives in the menu bar, captures selected text with a shortcut, sends it to your chosen model, and pastes the result back.")
                     .foregroundStyle(.secondary)
             }
 
@@ -112,7 +112,7 @@ struct PermissionsStatusView: View {
     var body: some View {
         HStack {
             Image(systemName: "figure.wave")
-            Text("Accessibility access is required so Fluent App can copy the selected text and paste the transformed result.")
+            Text("Accessibility access is required so Cometrans can copy the selected text and paste the transformed result.")
             Spacer()
             Button("Open Accessibility Settings") {
                 if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {

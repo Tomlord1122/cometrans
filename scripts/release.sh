@@ -9,8 +9,8 @@ fi
 
 VERSION="$1"
 TAG="v$VERSION"
-APPLE_SILICON_DMG="Fluent-App-${VERSION}-apple-silicon.dmg"
-INTEL_DMG="Fluent-App-${VERSION}-intel.dmg"
+APPLE_SILICON_DMG="Cometrans-${VERSION}-apple-silicon.dmg"
+INTEL_DMG="Cometrans-${VERSION}-intel.dmg"
 
 ./scripts/test_coverage.sh
 VERSION="$VERSION" BUILD_ARCH=arm64 ARTIFACT_SUFFIX=-apple-silicon ./build_dmg.sh
@@ -28,7 +28,7 @@ if command -v gh >/dev/null 2>&1; then
   gh release create "$TAG" \
     "$APPLE_SILICON_DMG" "$APPLE_SILICON_DMG.sha256" \
     "$INTEL_DMG" "$INTEL_DMG.sha256" \
-    --title "Fluent App $VERSION" \
+    --title "Cometrans $VERSION" \
     --generate-notes
 else
   echo "Tag pushed. Create the GitHub release manually and upload:"

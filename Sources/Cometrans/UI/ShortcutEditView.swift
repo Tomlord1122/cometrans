@@ -1,4 +1,4 @@
-import FluentCore
+import CometransCore
 import SwiftUI
 
 struct ShortcutEditView: View {

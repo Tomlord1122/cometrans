@@ -89,8 +89,8 @@ jobs:
         with:
           name: release
           path: |
-            Fluent-App-${{ needs.prepare.outputs.version }}.dmg
-            Fluent-App-${{ needs.prepare.outputs.version }}.dmg.sha256
+            Cometrans-${{ needs.prepare.outputs.version }}.dmg
+            Cometrans-${{ needs.prepare.outputs.version }}.dmg.sha256
 
   release:
     name: Publish Release
@@ -111,8 +111,8 @@ jobs:
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           files: |
-            dist/release/Fluent-App-${{ needs.prepare.outputs.version }}.dmg
-            dist/release/Fluent-App-${{ needs.prepare.outputs.version }}.dmg.sha256
+            dist/release/Cometrans-${{ needs.prepare.outputs.version }}.dmg
+            dist/release/Cometrans-${{ needs.prepare.outputs.version }}.dmg.sha256
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

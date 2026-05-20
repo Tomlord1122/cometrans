@@ -4,25 +4,25 @@
 import PackageDescription
 
 let package = Package(
-    name: "FluentApp",
+    name: "Cometrans",
     platforms: [
         .macOS("26.0")
     ],
     products: [
-        .library(name: "FluentCore", targets: ["FluentCore"]),
-        .executable(name: "FluentApp", targets: ["FluentApp"])
+        .library(name: "CometransCore", targets: ["CometransCore"]),
+        .executable(name: "Cometrans", targets: ["Cometrans"])
     ],
     dependencies: [
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.6.0")
     ],
     targets: [
         .target(
-            name: "FluentCore",
+            name: "CometransCore",
             dependencies: []
         ),
         .target(
-            name: "FluentMacSupport",
-            dependencies: ["FluentCore"],
+            name: "CometransMacSupport",
+            dependencies: ["CometransCore"],
             linkerSettings: [
                 .linkedFramework("Carbon"),
                 .linkedFramework("AppKit"),
@@ -31,13 +31,13 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "FluentApp",
+            name: "Cometrans",
             dependencies: [
-                "FluentCore",
-                "FluentMacSupport",
+                "CometransCore",
+                "CometransMacSupport",
                 .product(name: "Sparkle", package: "Sparkle")
             ],
-            path: "Sources/FluentApp",
+            path: "Sources/Cometrans",
             exclude: [
                 "Contracts",
                 "Model",
@@ -45,7 +45,7 @@ let package = Package(
                 "Services"
             ],
             sources: [
-                "FluentApp.swift",
+                "CometransApp.swift",
                 "UI/SettingsView.swift",
                 "UI/ShortcutEditView.swift",
                 "UI/ShortcutRecorderView.swift",
@@ -57,9 +57,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "FluentAppTests",
-            dependencies: ["FluentCore"],
-            path: "Tests/FluentAppTests"
+            name: "CometransTests",
+            dependencies: ["CometransCore"],
+            path: "Tests/CometransTests"
         )
     ]
 )

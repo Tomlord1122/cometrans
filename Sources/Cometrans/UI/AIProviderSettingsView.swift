@@ -1,4 +1,4 @@
-import FluentCore
+import CometransCore
 import SwiftUI
 
 struct AIProviderSettingsView: View {
@@ -15,7 +15,7 @@ struct AIProviderSettingsView: View {
                         Text(provider.displayName).tag(provider)
                     }
                 }
-                Text("Fluent App will use this provider when any shortcut is triggered.")
+                Text("Cometrans will use this provider when any shortcut is triggered.")
                     .foregroundStyle(.secondary)
             }
 

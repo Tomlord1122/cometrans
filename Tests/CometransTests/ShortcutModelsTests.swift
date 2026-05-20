@@ -1,5 +1,5 @@
 import XCTest
-@testable import FluentCore
+@testable import CometransCore
 
 final class ShortcutModelsTests: XCTestCase {
     func testShortcutDescriptionAndComponents() {

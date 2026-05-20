@@ -148,7 +148,7 @@
 
 ### Features
 
-* Initial release of Fluent App
+* Initial release of Cometrans
 * macOS menu bar application for AI-powered text processing
 * Support for multiple AI providers (OpenAI, Anthropic, Google, xAI)
 * Global hotkey support

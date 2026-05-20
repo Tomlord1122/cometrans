@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-EXECUTABLE_NAME="${EXECUTABLE_NAME:-FluentApp}"
-APP_BUNDLE_NAME="${APP_BUNDLE_NAME:-Fluent App}"
-DISPLAY_NAME="${DISPLAY_NAME:-Fluent App}"
-ARTIFACT_STEM="${ARTIFACT_STEM:-Fluent-App}"
-APP_IDENTIFIER="${APP_IDENTIFIER:-com.alfonsobries.fluent}"
+EXECUTABLE_NAME="${EXECUTABLE_NAME:-Cometrans}"
+APP_BUNDLE_NAME="${APP_BUNDLE_NAME:-Cometrans}"
+DISPLAY_NAME="${DISPLAY_NAME:-Cometrans}"
+ARTIFACT_STEM="${ARTIFACT_STEM:-Cometrans}"
+APP_IDENTIFIER="${APP_IDENTIFIER:-com.tomliu.cometrans}"
 VERSION="${VERSION:-$(cat version.txt 2>/dev/null || echo 1.2.0)}"
 # Derive build number from version (1.6.0 → 10600) for Sparkle version comparison
 IFS='.' read -r V_MAJOR V_MINOR V_PATCH <<< "$VERSION"
