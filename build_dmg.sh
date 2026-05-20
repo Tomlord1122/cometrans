@@ -7,7 +7,7 @@ APP_BUNDLE_NAME="${APP_BUNDLE_NAME:-Cometrans}"
 DISPLAY_NAME="${DISPLAY_NAME:-Cometrans}"
 ARTIFACT_STEM="${ARTIFACT_STEM:-Cometrans}"
 APP_IDENTIFIER="${APP_IDENTIFIER:-com.tomliu.cometrans}"
-VERSION="${VERSION:-$(cat version.txt 2>/dev/null || echo 1.2.0)}"
+VERSION="${VERSION:-$(cat version.txt 2>/dev/null || echo 0.1.0)}"
 # Derive build number from version (1.6.0 → 10600) for Sparkle version comparison
 IFS='.' read -r V_MAJOR V_MINOR V_PATCH <<< "$VERSION"
 BUILD_NUMBER="${BUILD_NUMBER:-$(( ${V_MAJOR:-0} * 10000 + ${V_MINOR:-0} * 100 + ${V_PATCH:-0} ))}"

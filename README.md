@@ -41,15 +41,15 @@ make build
 make test
 make coverage
 make dmg
-make release VERSION=1.2.0
+make release VERSION=0.1.0
 ```
 
 Equivalent scripts:
 
 ```bash
 ./scripts/test_coverage.sh
-VERSION=1.2.0 ./build_dmg.sh
-./scripts/release.sh 1.2.0
+VERSION=0.1.0 ./build_dmg.sh
+./scripts/release.sh 0.1.0
 ```
 
 ## Development Setup
@@ -81,8 +81,8 @@ Local maintainer flow:
 
 ```bash
 make coverage
-VERSION=1.2.0 ./build_dmg.sh
-./scripts/release.sh 1.2.0
+VERSION=0.1.0 ./build_dmg.sh
+./scripts/release.sh 0.1.0
 ```
 
 GitHub flow:
