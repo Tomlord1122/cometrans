@@ -26,8 +26,8 @@ public final class AIProviderFactory {
             .gemini: { GeminiProvider(model: $0) },
             .grok: { GrokProvider(model: $0) },
             .opencode: { OpencodeProvider(model: $0) }
-            // .appleIntelligence is registered from CometransMacSupport at app startup,
-            // since it depends on the FoundationModels framework.
+            // Apple on-device providers are registered from CometransMacSupport at app startup,
+            // since they depend on Apple platform frameworks.
         ]
     }
 

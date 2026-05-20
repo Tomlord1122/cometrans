@@ -70,9 +70,45 @@ public final class OpencodeProvider: AIProvider {
         case 401:
             return .failure(.invalidAPIKey)
         case 429:
+            if let message = errorMessage(from: response.0) {
+                return .failure(.unknown("OpenCode Go error: \(message)"))
+            }
             return .failure(.rateLimited)
         default:
             return .failure(.serverError(response.1.statusCode))
         }
+    }
+
+    private func errorMessage(from data: Data) -> String? {
+        guard !data.isEmpty else { return nil }
+
+        if
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let message = extractMessage(from: json)
+        {
+            return message
+        }
+
+        let text = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return text?.isEmpty == false ? text : nil
+    }
+
+    private func extractMessage(from json: [String: Any]) -> String? {
+        if let message = json["message"] as? String {
+            return message
+        }
+
+        if let error = json["error"] as? String {
+            return error
+        }
+
+        if
+            let error = json["error"] as? [String: Any],
+            let message = error["message"] as? String
+        {
+            return message
+        }
+
+        return nil
     }
 }

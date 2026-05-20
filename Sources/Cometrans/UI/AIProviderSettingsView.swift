@@ -182,6 +182,8 @@ struct APIKeyRow: View {
             return "Paste your full key, for example xai-..."
         case .opencode:
             return "Paste your opencode gateway key"
+        case .appleTranslation:
+            return ""
         case .appleIntelligence:
             return ""
         }

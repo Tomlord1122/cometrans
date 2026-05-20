@@ -9,6 +9,7 @@ final class AIProviderTests: XCTestCase {
             "Google (Gemini)",
             "xAI (Grok)",
             "OpenCode Go",
+            "Apple Translation (on-device)",
             "Apple Intelligence (on-device)"
         ])
         XCTAssertEqual(AIProviderType.openai.id, "openai")
@@ -129,6 +130,9 @@ final class AIProviderTests: XCTestCase {
 
         client.nextResult = .success((Data(), httpResponse(statusCode: 429)))
         assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.rateLimited))
+
+        client.nextResult = .success((jsonData(["error": ["message": "Usage limit reached"]]), httpResponse(statusCode: 429)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.unknown("OpenCode Go error: Usage limit reached")))
 
         client.nextResult = .success((Data(), httpResponse(statusCode: 500)))
         assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.serverError(500)))

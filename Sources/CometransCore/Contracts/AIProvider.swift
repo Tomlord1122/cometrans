@@ -53,6 +53,7 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
     case gemini
     case grok
     case opencode
+    case appleTranslation
     case appleIntelligence
 
     public var id: String { rawValue }
@@ -64,6 +65,7 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
         case .gemini: return "Google (Gemini)"
         case .grok: return "xAI (Grok)"
         case .opencode: return "OpenCode Go"
+        case .appleTranslation: return "Apple Translation (on-device)"
         case .appleIntelligence: return "Apple Intelligence (on-device)"
         }
     }
@@ -75,6 +77,7 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
         case .gemini: return "https://aistudio.google.com/apikey"
         case .grok: return "https://console.x.ai"
         case .opencode: return "https://opencode.ai/go"
+        case .appleTranslation: return "https://www.apple.com/apple-intelligence/"
         case .appleIntelligence: return "https://www.apple.com/apple-intelligence/"
         }
     }
@@ -86,12 +89,13 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
         case .gemini: return "AI..."
         case .grok: return "xai-..."
         case .opencode: return "oc-..."
+        case .appleTranslation: return ""
         case .appleIntelligence: return ""
         }
     }
 
     public var requiresAPIKey: Bool {
-        self != .appleIntelligence
+        self != .appleIntelligence && self != .appleTranslation
     }
 
     public var availableModels: [String] {
@@ -146,6 +150,8 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
                 "mimo-v2-pro",
                 "mimo-v2-omni"
             ]
+        case .appleTranslation:
+            return ["auto-en-zh-Hant"]
         case .appleIntelligence:
             return ["system-default"]
         }

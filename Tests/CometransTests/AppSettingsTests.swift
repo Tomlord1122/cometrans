@@ -22,7 +22,7 @@ final class AppSettingsTests: XCTestCase {
     func testDefaultsLoadAndPersist() {
         let settings = AppSettings(userDefaults: userDefaults)
 
-        XCTAssertEqual(settings.selectedProvider, .openai)
+        XCTAssertEqual(settings.selectedProvider, .appleIntelligence)
         XCTAssertEqual(settings.shortcutActions.count, 3)
         XCTAssertTrue(settings.launchAtStartup)
         XCTAssertEqual(userDefaults.bool(forKey: AppSettings.Keys.launchAtStartup), true)

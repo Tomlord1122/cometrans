@@ -83,7 +83,7 @@ public final class AppSettings: ObservableObject {
         {
             selectedProvider = provider
         } else {
-            selectedProvider = .openai
+            selectedProvider = .appleIntelligence
         }
 
         apiKeys = Self.loadAPIKeys(from: userDefaults)

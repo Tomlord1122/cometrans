@@ -25,7 +25,9 @@ let package = Package(
                 .linkedFramework("Carbon"),
                 .linkedFramework("AppKit"),
                 .linkedFramework("ApplicationServices"),
-                .linkedFramework("ServiceManagement")
+                .linkedFramework("ServiceManagement"),
+                .linkedFramework("Translation"),
+                .linkedFramework("NaturalLanguage")
             ]
         ),
         .executableTarget(
