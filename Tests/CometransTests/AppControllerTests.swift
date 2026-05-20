@@ -24,6 +24,7 @@ final class AppControllerTests: XCTestCase {
         let userDefaults = UserDefaults(suiteName: suiteName)!
         userDefaults.removePersistentDomain(forName: suiteName)
         let settings = AppSettings(userDefaults: userDefaults, providerFactory: factory, launchAtLoginController: launchController)
+        settings.selectedProvider = .openai
         let clipboard = MockClipboardService()
         let hotKeys = MockHotKeyManager()
         let controller = AppController(settings: settings, clipboardService: clipboard, hotKeyManager: hotKeys)
@@ -51,6 +52,7 @@ final class AppControllerTests: XCTestCase {
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!,
             providerFactory: AIProviderFactory(providers: [.openai: provider])
         )
+        settings.selectedProvider = .openai
         settings.setAPIKey("key", for: .openai)
         let clipboard = MockClipboardService()
         clipboard.copiedText = "Hola"
