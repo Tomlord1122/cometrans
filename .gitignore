@@ -1,0 +1,9 @@
+.build/
+.DS_Store
+*.zip
+*.xcodeproj
+*.dmg
+*.app
+*.sha256
+.swiftpm
+xcuserdata/
