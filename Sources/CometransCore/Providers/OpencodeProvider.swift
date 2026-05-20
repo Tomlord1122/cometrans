@@ -44,8 +44,7 @@ public final class OpencodeProvider: AIProvider {
             "temperature": 0.7
         ])
 
-        httpClient.send(request) { [weak self] result in
-            guard let self else { return }
+        httpClient.send(request) { result in
             switch result {
             case .failure(let error):
                 completion(.failure(.networkError(error.localizedDescription)))

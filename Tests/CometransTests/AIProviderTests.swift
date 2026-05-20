@@ -168,12 +168,96 @@ final class AIProviderTests: XCTestCase {
         XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer key")
     }
 
+    func testOpencodeProviderRequestAndResponses() throws {
+        let client = MockHTTPClient()
+        let provider = OpencodeProvider(httpClient: client)
+
+        assert(provider.processResult(text: "hola", apiKey: "", instructions: "inst"), equals: .failure(.invalidAPIKey))
+
+        client.nextResult = .failure(TestError.failed)
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.networkError("boom")))
+
+        client.nextResult = .success((Data(), httpResponse(statusCode: 200)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.noContent))
+
+        client.nextResult = .success((jsonData(["choices": []]), httpResponse(statusCode: 200)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.invalidResponse))
+
+        client.nextResult = .success((jsonData(["choices": [["message": ["content": " translated "]]]]), httpResponse(statusCode: 200)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .success("translated"))
+
+        client.nextResult = .success((Data(), httpResponse(statusCode: 401)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.invalidAPIKey))
+
+        client.nextResult = .success((Data(), httpResponse(statusCode: 429)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.rateLimited))
+
+        client.nextResult = .success((Data(), httpResponse(statusCode: 500)))
+        assert(provider.processResult(text: "hola", apiKey: "key", instructions: "inst"), equals: .failure(.serverError(500)))
+
+        let request = try XCTUnwrap(client.requests.last)
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer key")
+        XCTAssertEqual(request.httpMethod, "POST")
+    }
+
+    func testProvidersCompleteAfterProviderFallsOutOfScope() {
+        assertProviderCompletesAfterScope(
+            makeProvider: { OpenAIProvider(httpClient: $0) },
+            responseData: jsonData(["choices": [["message": ["content": " hello "]]]])
+        )
+        assertProviderCompletesAfterScope(
+            makeProvider: { ClaudeProvider(httpClient: $0) },
+            responseData: jsonData(["content": [["text": " hello "]]])
+        )
+        assertProviderCompletesAfterScope(
+            makeProvider: { GeminiProvider(httpClient: $0) },
+            responseData: jsonData([
+                "candidates": [[
+                    "content": [
+                        "parts": [["text": " hello "]]
+                    ]
+                ]]
+            ])
+        )
+        assertProviderCompletesAfterScope(
+            makeProvider: { GrokProvider(httpClient: $0) },
+            responseData: jsonData(["choices": [["message": ["content": " hello "]]]])
+        )
+        assertProviderCompletesAfterScope(
+            makeProvider: { OpencodeProvider(httpClient: $0) },
+            responseData: jsonData(["choices": [["message": ["content": " hello "]]]])
+        )
+    }
+
     private func httpResponse(statusCode: Int) -> HTTPURLResponse {
         HTTPURLResponse(url: URL(string: "https://example.com")!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
     }
 
     private func jsonData(_ object: [String: Any]) -> Data {
         try! JSONSerialization.data(withJSONObject: object)
+    }
+
+    private func assertProviderCompletesAfterScope(
+        makeProvider: (DeferredHTTPClient) -> AIProvider,
+        responseData: Data,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let client = DeferredHTTPClient()
+        let expectation = XCTestExpectation(description: "provider completes")
+        var captured: Result<String, AIProviderError>?
+
+        do {
+            let provider = makeProvider(client)
+            provider.processText(text: "hola", apiKey: "key", instructions: "inst") { result in
+                captured = result
+                expectation.fulfill()
+            }
+        }
+
+        client.complete(with: .success((responseData, httpResponse(statusCode: 200))))
+        wait(for: [expectation], timeout: 1)
+        XCTAssertEqual(captured, .success("hello"), file: file, line: line)
     }
 
     private func assert(_ result: Result<String, AIProviderError>, equals expected: Result<String, AIProviderError>, file: StaticString = #file, line: UInt = #line) {

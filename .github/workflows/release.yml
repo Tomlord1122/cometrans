@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to release (for example 1.2.3)"
+        description: "Release version or tag (for example v1.2.3)"
         required: true
         type: string
 
@@ -26,8 +26,10 @@ jobs:
       - name: Resolve version
         id: version
         run: |
-          echo "value=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          echo "tag=v${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          RELEASE_VERSION="${{ inputs.version }}"
+          APP_VERSION="${RELEASE_VERSION#v}"
+          echo "value=$APP_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$APP_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Ensure tag exists for manual run
         if: ${{ github.event_name == 'workflow_dispatch' }}

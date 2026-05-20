@@ -60,17 +60,19 @@ struct ShortcutEditView: View {
                     ForEach(settings.shortcutActions) { action in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(action.name)
+                                .lineLimit(1)
                             Text(action.shortcutDescription)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                                .lineLimit(1)
                         }
                         .tag(action.id)
                     }
                     .onDelete(perform: deleteItems)
                     .onMove(perform: settings.moveAction)
                 }
-                .frame(minWidth: 260, idealWidth: 280, maxWidth: 300)
             }
+            .frame(width: 300)
             .padding(.trailing, 20)
 
             Divider()
@@ -95,7 +97,7 @@ struct ShortcutEditView: View {
             }
         }
         .onAppear(perform: syncDraft)
-        .onChange(of: selectedShortcutID) { _ in
+        .onChange(of: selectedShortcutID) {
             syncDraft()
         }
         .alert("You have unsaved changes", isPresented: $showDiscardChangesAlert) {
@@ -112,42 +114,49 @@ struct ShortcutEditView: View {
 
     private func editor(for action: ShortcutAction) -> some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 16) {
                     Text(action.name)
                         .font(.title3)
                         .fontWeight(.semibold)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    if hasUnsavedChanges {
-                        Label("You have unsaved changes. Press Save Changes to apply them.", systemImage: "exclamationmark.circle")
-                            .font(.subheadline)
-                            .foregroundStyle(.orange)
-                    } else {
-                        Text("Changes are applied only after you press Save Changes.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                    Spacer(minLength: 12)
+
+                    HStack(spacing: 10) {
+                        Button("Delete", role: .destructive) {
+                            settings.deleteAction(action)
+                            selectedShortcutID = settings.shortcutActions.first?.id
+                            syncDraft()
+                        }
+
+                        Button("Discard Changes") {
+                            syncDraft()
+                        }
+                        .disabled(!hasUnsavedChanges)
+
+                        Button("Save Changes") {
+                            settings.updateAction(draft.makeAction(existingID: action.id))
+                            syncDraft()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!hasUnsavedChanges || !validationMessages.isEmpty)
                     }
+                    .fixedSize(horizontal: true, vertical: false)
                 }
 
-                Spacer()
-
-                Button("Delete", role: .destructive) {
-                    settings.deleteAction(action)
-                    selectedShortcutID = settings.shortcutActions.first?.id
-                    syncDraft()
+                if hasUnsavedChanges {
+                    Label("You have unsaved changes. Press Save Changes to apply them.", systemImage: "exclamationmark.circle")
+                        .font(.subheadline)
+                        .foregroundStyle(.orange)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text("Changes are applied only after you press Save Changes.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-
-                Button("Discard Changes") {
-                    syncDraft()
-                }
-                .disabled(!hasUnsavedChanges)
-
-                Button("Save Changes") {
-                    settings.updateAction(draft.makeAction(existingID: action.id))
-                    syncDraft()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!hasUnsavedChanges || !validationMessages.isEmpty)
             }
             .padding(.horizontal, 8)
             .padding(.bottom, 12)

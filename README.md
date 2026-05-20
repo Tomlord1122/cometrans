@@ -58,7 +58,7 @@ make build
 make test
 make coverage
 make dmg
-make release VERSION=0.1.0
+make release VERSION=v0.4.0
 ```
 
 Optional icon generation requires `librsvg`:

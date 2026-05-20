@@ -35,8 +35,8 @@ struct ShortcutRecorderView: View {
             }
         }
         .onAppear(perform: updateDisplayText)
-        .onChange(of: keyCode) { _ in updateDisplayText() }
-        .onChange(of: modifiers) { _ in updateDisplayText() }
+        .onChange(of: keyCode) { updateDisplayText() }
+        .onChange(of: modifiers) { updateDisplayText() }
         .onDisappear(perform: removeEventMonitor)
     }
 

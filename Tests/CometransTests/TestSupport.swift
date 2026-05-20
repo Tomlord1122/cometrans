@@ -14,6 +14,23 @@ final class MockHTTPClient: HTTPClient {
     }
 }
 
+final class DeferredHTTPClient: HTTPClient {
+    var requests: [URLRequest] = []
+    private var completion: ((Result<(Data, HTTPURLResponse), Error>) -> Void)?
+
+    func send(
+        _ request: URLRequest,
+        completion: @escaping (Result<(Data, HTTPURLResponse), Error>) -> Void
+    ) {
+        requests.append(request)
+        self.completion = completion
+    }
+
+    func complete(with result: Result<(Data, HTTPURLResponse), Error>) {
+        completion?(result)
+    }
+}
+
 final class MockClipboardService: ClipboardServicing {
     var permissionGranted = true
     var copiedText: String?

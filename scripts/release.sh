@@ -7,7 +7,8 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-VERSION="$1"
+RELEASE_VERSION="$1"
+VERSION="${RELEASE_VERSION#v}"
 TAG="v$VERSION"
 APPLE_SILICON_DMG="Cometrans-${VERSION}-apple-silicon.dmg"
 INTEL_DMG="Cometrans-${VERSION}-intel.dmg"

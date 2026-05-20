@@ -46,8 +46,7 @@ public enum ShortcutCatalog {
             name: "Translate",
             keyCode: 31,
             modifiers: 768,
-            prompt: "Translate the following text to natural, fluent English. If it is already in English, polish it for clarity while preserving the original meaning. Output only the translated text without any explanations, quotation marks, or commentary.",
-            providerOverride: .appleIntelligence
+            prompt: "Translate the following text to natural, fluent English. If it is already in English, polish it for clarity while preserving the original meaning. Output only the translated text without any explanations, quotation marks, or commentary."
         ),
         ShortcutTemplate(
             id: "improve",

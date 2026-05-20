@@ -98,6 +98,7 @@ public final class AppSettings: ObservableObject {
         }
 
         migrateLegacyValues()
+        migrateDefaultTranslateProviderOverride()
         synchronizeLaunchAtStartupPreference()
     }
 
@@ -255,6 +256,33 @@ public final class AppSettings: ObservableObject {
             userDefaults.removeObject(forKey: Keys.legacyShortcutModifiers)
             userDefaults.removeObject(forKey: Keys.legacyPrompt)
             saveShortcutActions()
+        }
+    }
+
+    private func migrateDefaultTranslateProviderOverride() {
+        guard let template = ShortcutCatalog.templates.first(where: { $0.id == "translate" }) else { return }
+
+        var migratedActions = shortcutActions
+        var didMigrate = false
+
+        for index in migratedActions.indices {
+            let action = migratedActions[index]
+            guard
+                action.name == template.name,
+                action.keyCode == template.keyCode,
+                action.modifiers == template.modifiers,
+                action.prompt == template.prompt,
+                action.providerOverride == .appleIntelligence
+            else {
+                continue
+            }
+
+            migratedActions[index].providerOverride = nil
+            didMigrate = true
+        }
+
+        if didMigrate {
+            shortcutActions = migratedActions
         }
     }
 

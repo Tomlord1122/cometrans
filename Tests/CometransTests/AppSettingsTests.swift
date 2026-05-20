@@ -154,6 +154,35 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.shortcutActions.map(\.name), ["Translate", "Improve Writing", "Fix Grammar"])
     }
 
+    func testMigratesDefaultTranslateProviderOverrideToUseDefaultProvider() throws {
+        let template = try XCTUnwrap(ShortcutCatalog.templates.first { $0.id == "translate" })
+        let savedTranslate = ShortcutAction(
+            name: template.name,
+            keyCode: template.keyCode,
+            modifiers: template.modifiers,
+            prompt: template.prompt,
+            providerOverride: .appleIntelligence
+        )
+        let savedCustom = ShortcutAction(
+            name: "Translate",
+            keyCode: 31,
+            modifiers: 768,
+            prompt: "Custom prompt",
+            providerOverride: .appleIntelligence
+        )
+        userDefaults.set(try JSONEncoder().encode([savedTranslate, savedCustom]), forKey: AppSettings.Keys.shortcutActions)
+
+        let settings = AppSettings(userDefaults: userDefaults)
+
+        XCTAssertNil(settings.shortcutActions[0].providerOverride)
+        XCTAssertEqual(settings.shortcutActions[1].providerOverride, .appleIntelligence)
+
+        let data = try XCTUnwrap(userDefaults.data(forKey: AppSettings.Keys.shortcutActions))
+        let decoded = try JSONDecoder().decode([ShortcutAction].self, from: data)
+        XCTAssertNil(decoded[0].providerOverride)
+        XCTAssertEqual(decoded[1].providerOverride, .appleIntelligence)
+    }
+
     func testLegacyMigrationKeepsExistingOpenAIKeyAndFallsBackPrompt() {
         userDefaults.set(["openai": "existing"], forKey: AppSettings.Keys.apiKeys)
         userDefaults.set("legacy-key", forKey: AppSettings.Keys.legacyAPIKey)
