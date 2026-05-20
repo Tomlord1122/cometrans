@@ -14,7 +14,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare Release
-    runs-on: macos-14
+    runs-on: macos-26
     outputs:
       version: ${{ steps.version.outputs.value }}
       tag: ${{ steps.version.outputs.tag }}
@@ -45,7 +45,7 @@ jobs:
   build:
     name: Build
     needs: prepare
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
       - name: Checkout
@@ -95,7 +95,7 @@ jobs:
   release:
     name: Publish Release
     needs: [prepare, build]
-    runs-on: macos-14
+    runs-on: macos-26
 
     steps:
       - name: Checkout
@@ -116,36 +116,3 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate appcast
-        env:
-          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_EDDSA_PRIVATE_KEY }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-        run: |
-          # Install Sparkle CLI tools
-          SPARKLE_VERSION="2.6.4"
-          curl -sL "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz" -o /tmp/sparkle.tar.xz
-          mkdir -p /tmp/sparkle && tar xf /tmp/sparkle.tar.xz -C /tmp/sparkle
-          SPARKLE_BIN="/tmp/sparkle/bin"
-
-          mkdir -p appcast_dmgs
-          cp dist/release/*.dmg appcast_dmgs/ 2>/dev/null || true
-
-          # Generate appcast from DMGs
-          APPCAST_ARGS=(appcast_dmgs --download-url-prefix "https://github.com/alfonsobries/fluent-app/releases/download/v${VERSION}/")
-          if [[ -n "$SPARKLE_PRIVATE_KEY" ]]; then
-            KEY_FILE="$(mktemp)"
-            printf '%s' "$SPARKLE_PRIVATE_KEY" > "$KEY_FILE"
-            APPCAST_ARGS+=(--ed-key-file "$KEY_FILE")
-          fi
-          "$SPARKLE_BIN/generate_appcast" "${APPCAST_ARGS[@]}"
-          rm -f "$KEY_FILE" 2>/dev/null || true
-
-          cp appcast_dmgs/appcast.xml appcast.xml
-
-          # Commit appcast back to repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add appcast.xml
-          git diff --cached --quiet || git commit -m "chore: update appcast for v${VERSION}"
-          git push origin HEAD:main

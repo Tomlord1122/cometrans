@@ -1,7 +1,7 @@
 SHELL := /bin/zsh
 VERSION ?= $(shell cat version.txt)
 
-.PHONY: build test coverage release dmg icon website
+.PHONY: build test coverage release dmg icon
 
 build:
 	swift build
@@ -20,6 +20,3 @@ release:
 
 icon:
 	./Resources/generate_icon.sh
-
-website:
-	cd expo && npm ci && npm run build

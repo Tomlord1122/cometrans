@@ -87,9 +87,8 @@ VERSION=1.2.0 ./build_dmg.sh
 
 GitHub flow:
 
-- `release-please.yml` manages changelog and version PRs.
-- `release.yml` builds a DMG when a `v*` tag is pushed or when run manually.
-- `ci.yml` validates build, tests, coverage, and website build.
+- `release.yml` builds a DMG when run manually via `workflow_dispatch`.
+- `ci.yml` validates build and tests on every push and PR.
 
 ## Apple Signing And Notarization
 
@@ -137,16 +136,6 @@ This makes new shortcuts easy to add without touching the live platform adapters
 - API keys stay local on your Mac.
 - Text goes directly from Cometrans to the provider you selected.
 - No analytics, telemetry, or remote app backend is included.
-
-## Website
-
-The landing site lives in `expo/`.
-
-```bash
-cd expo
-npm ci
-npm run build
-```
 
 ## License
 
