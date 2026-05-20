@@ -2,8 +2,8 @@ import Foundation
 
 public final class OpencodeProvider: AIProvider {
     public static let identifier = "opencode"
-    public static let displayName = "opencode"
-    public static let apiKeyURL = "https://opencode.ai"
+    public static let displayName = "OpenCode Go"
+    public static let apiKeyURL = "https://opencode.ai/go"
     public static let apiKeyPlaceholder = "oc-..."
 
     private let httpClient: HTTPClient
@@ -12,8 +12,8 @@ public final class OpencodeProvider: AIProvider {
 
     public init(
         httpClient: HTTPClient = URLSessionHTTPClient(),
-        baseURL: URL = URL(string: "https://api.opencode.ai/v1/chat/completions")!,
-        model: String = "anthropic/claude-haiku-4-5"
+        baseURL: URL = URL(string: "https://opencode.ai/zen/go/v1/chat/completions")!,
+        model: String = "kimi-k2.6"
     ) {
         self.httpClient = httpClient
         self.baseURL = baseURL

@@ -63,7 +63,7 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
         case .claude: return "Anthropic (Claude)"
         case .gemini: return "Google (Gemini)"
         case .grok: return "xAI (Grok)"
-        case .opencode: return "opencode"
+        case .opencode: return "OpenCode Go"
         case .appleIntelligence: return "Apple Intelligence (on-device)"
         }
     }
@@ -74,7 +74,7 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
         case .claude: return "https://console.anthropic.com/api-keys"
         case .gemini: return "https://aistudio.google.com/apikey"
         case .grok: return "https://console.x.ai"
-        case .opencode: return "https://opencode.ai"
+        case .opencode: return "https://opencode.ai/go"
         case .appleIntelligence: return "https://www.apple.com/apple-intelligence/"
         }
     }
@@ -128,14 +128,23 @@ public enum AIProviderType: String, CaseIterable, Codable, Identifiable {
                 "grok-4-1-fast-non-reasoning"
             ]
         case .opencode:
+            // OpenCode Go subscription models ($10/month plan).
+            // Endpoint: https://opencode.ai/zen/go/v1/chat/completions
             return [
-                "anthropic/claude-haiku-4-5",
-                "anthropic/claude-sonnet-4-6",
-                "anthropic/claude-opus-4-7",
-                "openai/gpt-5.4-mini",
-                "openai/gpt-5.5",
-                "google/gemini-2.5-flash",
-                "xai/grok-4.3"
+                "kimi-k2.6",
+                "kimi-k2.5",
+                "deepseek-v4-pro",
+                "deepseek-v4-flash",
+                "glm-5.1",
+                "glm-5",
+                "qwen3.6-plus",
+                "qwen3.5-plus",
+                "minimax-m2.7",
+                "minimax-m2.5",
+                "mimo-v2.5-pro",
+                "mimo-v2.5",
+                "mimo-v2-pro",
+                "mimo-v2-omni"
             ]
         case .appleIntelligence:
             return ["system-default"]

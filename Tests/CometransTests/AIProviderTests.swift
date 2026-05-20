@@ -8,7 +8,7 @@ final class AIProviderTests: XCTestCase {
             "Anthropic (Claude)",
             "Google (Gemini)",
             "xAI (Grok)",
-            "opencode",
+            "OpenCode Go",
             "Apple Intelligence (on-device)"
         ])
         XCTAssertEqual(AIProviderType.openai.id, "openai")
