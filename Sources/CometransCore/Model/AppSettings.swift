@@ -108,7 +108,7 @@ public final class AppSettings: ObservableObject {
         hideMenuBarIcon = userDefaults.bool(forKey: Keys.hideMenuBarIcon)
 
         migrateLegacyValues()
-        migrateDefaultTranslateProviderOverride()
+        migrateDefaultTranslateAction()
         synchronizeLaunchAtStartupPreference()
     }
 
@@ -269,8 +269,9 @@ public final class AppSettings: ObservableObject {
         }
     }
 
-    private func migrateDefaultTranslateProviderOverride() {
+    private func migrateDefaultTranslateAction() {
         guard let template = ShortcutCatalog.templates.first(where: { $0.id == "translate" }) else { return }
+        let previousDefaultPrompt = "Translate the following text to natural, fluent English. If it is already in English, polish it for clarity while preserving the original meaning. Output only the translated text without any explanations, quotation marks, or commentary."
 
         var migratedActions = shortcutActions
         var didMigrate = false
@@ -281,13 +282,14 @@ public final class AppSettings: ObservableObject {
                 action.name == template.name,
                 action.keyCode == template.keyCode,
                 action.modifiers == template.modifiers,
-                action.prompt == template.prompt,
-                action.providerOverride == .appleIntelligence
+                action.prompt == previousDefaultPrompt || action.prompt == template.prompt,
+                action.providerOverride == nil || action.providerOverride == .appleIntelligence || action.providerOverride == .appleTranslation
             else {
                 continue
             }
 
-            migratedActions[index].providerOverride = nil
+            migratedActions[index].prompt = template.prompt
+            migratedActions[index].providerOverride = template.providerOverride
             didMigrate = true
         }
 

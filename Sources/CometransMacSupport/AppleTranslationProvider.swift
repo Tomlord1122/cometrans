@@ -25,7 +25,7 @@ public final class AppleTranslationProvider: AIProvider {
         Task {
             do {
                 let source = Self.sourceLanguage(for: text)
-                let target = Self.targetLanguage(for: source, instructions: instructions)
+                let target = Self.targetLanguage(for: source)
                 let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
                 guard !trimmedText.isEmpty else {
@@ -99,25 +99,7 @@ public final class AppleTranslationProvider: AIProvider {
         return containsHanCharacters(text) ? Locale.Language(identifier: "zh-Hant") : Locale.Language(identifier: "en")
     }
 
-    private static func targetLanguage(for source: Locale.Language, instructions: String) -> Locale.Language {
-        let normalizedInstructions = instructions.lowercased()
-
-        if normalizedInstructions.contains("english") {
-            return Locale.Language(identifier: "en")
-        }
-
-        if normalizedInstructions.contains("traditional chinese")
-            || normalizedInstructions.contains("繁體中文")
-            || normalizedInstructions.contains("zh-hant") {
-            return Locale.Language(identifier: "zh-Hant")
-        }
-
-        if normalizedInstructions.contains("simplified chinese")
-            || normalizedInstructions.contains("簡體中文")
-            || normalizedInstructions.contains("zh-hans") {
-            return Locale.Language(identifier: "zh-Hans")
-        }
-
+    private static func targetLanguage(for source: Locale.Language) -> Locale.Language {
         return source.languageCode?.identifier == "en"
             ? Locale.Language(identifier: "zh-Hant")
             : Locale.Language(identifier: "en")

@@ -79,7 +79,7 @@ struct SettingsView: View {
                 ))
                 Text("Cometrans lives in the menu bar, captures selected text with a shortcut, sends it to your chosen model, and pastes the result back.")
                     .foregroundStyle(.secondary)
-                Text("When hidden, existing shortcuts still work. Open Settings before hiding the icon if you need to change it back during this session.")
+                Text("When hidden, existing shortcuts still work. Reopen Cometrans from Spotlight, Finder, or Launchpad to show Settings again.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

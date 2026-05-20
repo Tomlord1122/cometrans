@@ -24,6 +24,8 @@ final class AppSettingsTests: XCTestCase {
 
         XCTAssertEqual(settings.selectedProvider, .appleIntelligence)
         XCTAssertEqual(settings.shortcutActions.count, 3)
+        XCTAssertEqual(settings.shortcutActions.first?.prompt, "")
+        XCTAssertEqual(settings.shortcutActions.first?.providerOverride, .appleTranslation)
         XCTAssertTrue(settings.launchAtStartup)
         XCTAssertFalse(settings.hideMenuBarIcon)
         XCTAssertEqual(userDefaults.bool(forKey: AppSettings.Keys.launchAtStartup), true)
@@ -159,13 +161,14 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.shortcutActions.map(\.name), ["Translate", "Improve Writing", "Fix Grammar"])
     }
 
-    func testMigratesDefaultTranslateProviderOverrideToUseDefaultProvider() throws {
+    func testMigratesDefaultTranslateActionToAppleTranslation() throws {
         let template = try XCTUnwrap(ShortcutCatalog.templates.first { $0.id == "translate" })
+        let previousDefaultPrompt = "Translate the following text to natural, fluent English. If it is already in English, polish it for clarity while preserving the original meaning. Output only the translated text without any explanations, quotation marks, or commentary."
         let savedTranslate = ShortcutAction(
             name: template.name,
             keyCode: template.keyCode,
             modifiers: template.modifiers,
-            prompt: template.prompt,
+            prompt: previousDefaultPrompt,
             providerOverride: .appleIntelligence
         )
         let savedCustom = ShortcutAction(
@@ -179,12 +182,14 @@ final class AppSettingsTests: XCTestCase {
 
         let settings = AppSettings(userDefaults: userDefaults)
 
-        XCTAssertNil(settings.shortcutActions[0].providerOverride)
+        XCTAssertEqual(settings.shortcutActions[0].prompt, "")
+        XCTAssertEqual(settings.shortcutActions[0].providerOverride, .appleTranslation)
         XCTAssertEqual(settings.shortcutActions[1].providerOverride, .appleIntelligence)
 
         let data = try XCTUnwrap(userDefaults.data(forKey: AppSettings.Keys.shortcutActions))
         let decoded = try JSONDecoder().decode([ShortcutAction].self, from: data)
-        XCTAssertNil(decoded[0].providerOverride)
+        XCTAssertEqual(decoded[0].prompt, "")
+        XCTAssertEqual(decoded[0].providerOverride, .appleTranslation)
         XCTAssertEqual(decoded[1].providerOverride, .appleIntelligence)
     }
 
