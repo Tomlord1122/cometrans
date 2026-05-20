@@ -30,8 +30,12 @@ if [[ -f "$RESOURCES_DIR/generate_icon.sh" && ! -f "$RESOURCES_DIR/AppIcon.icns"
   (cd "$RESOURCES_DIR" && ./generate_icon.sh) || echo "Icon generation skipped."
 fi
 
-echo "Running release tests..."
-swift test
+if [[ "${SKIP_TESTS:-0}" == "1" ]]; then
+  echo "Skipping release tests (SKIP_TESTS=1)."
+else
+  echo "Running release tests..."
+  swift test
+fi
 
 echo "Building release binary..."
 swift build "${SWIFT_BUILD_ARGS[@]}"
