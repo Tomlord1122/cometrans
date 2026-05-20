@@ -93,12 +93,6 @@ struct SettingsView: View {
                 PermissionsStatusView()
             }
 
-            Section("Updates") {
-                Button("Check for Updates…") {
-                    NSApp.sendAction(#selector(AppDelegate.checkForUpdates), to: nil, from: nil)
-                }
-            }
-
             Section("Templates") {
                 Text("Use the Shortcuts tab to start from templates for translation, writing improvement, grammar fixes, summaries, or your own prompts.")
                     .foregroundStyle(.secondary)

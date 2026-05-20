@@ -12,9 +12,7 @@ let package = Package(
         .library(name: "CometransCore", targets: ["CometransCore"]),
         .executable(name: "Cometrans", targets: ["Cometrans"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.6.0")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "CometransCore",
@@ -34,8 +32,7 @@ let package = Package(
             name: "Cometrans",
             dependencies: [
                 "CometransCore",
-                "CometransMacSupport",
-                .product(name: "Sparkle", package: "Sparkle")
+                "CometransMacSupport"
             ],
             path: "Sources/Cometrans",
             exclude: [
@@ -52,8 +49,7 @@ let package = Package(
                 "UI/AIProviderSettingsView.swift"
             ],
             linkerSettings: [
-                .linkedFramework("AppKit"),
-                .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])
+                .linkedFramework("AppKit")
             ]
         ),
         .testTarget(
