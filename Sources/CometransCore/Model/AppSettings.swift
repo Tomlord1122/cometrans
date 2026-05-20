@@ -10,6 +10,7 @@ public final class AppSettings: ObservableObject {
         public static let selectedModels = "selectedModels"
         public static let shortcutActions = "shortcutActions"
         public static let launchAtStartup = "launchAtStartup"
+        public static let hideMenuBarIcon = "hideMenuBarIcon"
         public static let legacyAPIKey = "apiKey"
         public static let legacyShortcutKeyCode = "shortcutKeyCode"
         public static let legacyShortcutModifiers = "shortcutModifiers"
@@ -56,6 +57,13 @@ public final class AppSettings: ObservableObject {
         }
     }
 
+    public var hideMenuBarIcon: Bool {
+        didSet {
+            objectWillChange.send()
+            userDefaults.set(hideMenuBarIcon, forKey: Keys.hideMenuBarIcon)
+        }
+    }
+
     public private(set) var launchAtStartupError: String? {
         didSet {
             objectWillChange.send()
@@ -96,6 +104,8 @@ public final class AppSettings: ObservableObject {
             launchAtStartup = true
             userDefaults.set(true, forKey: Keys.launchAtStartup)
         }
+
+        hideMenuBarIcon = userDefaults.bool(forKey: Keys.hideMenuBarIcon)
 
         migrateLegacyValues()
         migrateDefaultTranslateProviderOverride()

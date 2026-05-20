@@ -25,7 +25,27 @@ public final class AppleTranslationProvider: AIProvider {
         Task {
             do {
                 let source = Self.sourceLanguage(for: text)
-                let target = Self.targetLanguage(for: source)
+                let target = Self.targetLanguage(for: source, instructions: instructions)
+                let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                guard !trimmedText.isEmpty else {
+                    completion(.failure(.noContent))
+                    return
+                }
+
+                guard !Self.sameLanguage(source, target) else {
+                    completion(.success(trimmedText))
+                    return
+                }
+
+                let availability = Self.languageAvailability()
+                let status = await availability.status(from: source, to: target)
+
+                guard status != .unsupported else {
+                    completion(.failure(.unknown("Apple Translation does not support \(Self.languageName(source)) to \(Self.languageName(target)) on this Mac.")))
+                    return
+                }
+
                 let session: TranslationSession
 
                 if #available(macOS 26.4, *) {
@@ -38,15 +58,16 @@ public final class AppleTranslationProvider: AIProvider {
                     session = TranslationSession(installedSource: source, target: target)
                 }
 
-                if #available(macOS 26.0, *), await !session.isReady {
+                let isReady = await session.isReady
+                if status == .supported || !isReady {
                     try await session.prepareTranslation()
                 }
 
-                let response = try await session.translate(text)
+                let response = try await session.translate(trimmedText)
                 let output = response.targetText.trimmingCharacters(in: .whitespacesAndNewlines)
                 completion(output.isEmpty ? .failure(.noContent) : .success(output))
             } catch {
-                completion(.failure(.unknown("Apple Translation error: \(error.localizedDescription)")))
+                completion(.failure(.unknown("Apple Translation error: \(Self.errorMessage(for: error))")))
             }
         }
         #else
@@ -78,10 +99,57 @@ public final class AppleTranslationProvider: AIProvider {
         return containsHanCharacters(text) ? Locale.Language(identifier: "zh-Hant") : Locale.Language(identifier: "en")
     }
 
-    private static func targetLanguage(for source: Locale.Language) -> Locale.Language {
-        source.languageCode?.identifier == "en"
+    private static func targetLanguage(for source: Locale.Language, instructions: String) -> Locale.Language {
+        let normalizedInstructions = instructions.lowercased()
+
+        if normalizedInstructions.contains("english") {
+            return Locale.Language(identifier: "en")
+        }
+
+        if normalizedInstructions.contains("traditional chinese")
+            || normalizedInstructions.contains("繁體中文")
+            || normalizedInstructions.contains("zh-hant") {
+            return Locale.Language(identifier: "zh-Hant")
+        }
+
+        if normalizedInstructions.contains("simplified chinese")
+            || normalizedInstructions.contains("簡體中文")
+            || normalizedInstructions.contains("zh-hans") {
+            return Locale.Language(identifier: "zh-Hans")
+        }
+
+        return source.languageCode?.identifier == "en"
             ? Locale.Language(identifier: "zh-Hant")
             : Locale.Language(identifier: "en")
+    }
+
+    private static func sameLanguage(_ lhs: Locale.Language, _ rhs: Locale.Language) -> Bool {
+        lhs.languageCode?.identifier == rhs.languageCode?.identifier
+    }
+
+    #if canImport(Translation)
+    private static func languageAvailability() -> LanguageAvailability {
+        if #available(macOS 26.4, *) {
+            LanguageAvailability(preferredStrategy: .lowLatency)
+        } else {
+            LanguageAvailability()
+        }
+    }
+
+    private static func errorMessage(for error: Error) -> String {
+        let localized = error.localizedDescription
+        let reason = (error as? LocalizedError)?.failureReason
+
+        if let reason, !reason.isEmpty, reason != localized {
+            return "\(localized) \(reason)"
+        }
+
+        return localized
+    }
+    #endif
+
+    private static func languageName(_ language: Locale.Language) -> String {
+        language.minimalIdentifier
     }
 
     private static func containsHanCharacters(_ text: String) -> Bool {

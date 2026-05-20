@@ -73,7 +73,14 @@ struct SettingsView: View {
                     get: { controller.settings.launchAtStartup },
                     set: { controller.settings.launchAtStartup = $0 }
                 ))
+                Toggle("Hide menu bar icon", isOn: Binding(
+                    get: { controller.settings.hideMenuBarIcon },
+                    set: { controller.settings.hideMenuBarIcon = $0 }
+                ))
                 Text("Cometrans lives in the menu bar, captures selected text with a shortcut, sends it to your chosen model, and pastes the result back.")
+                    .foregroundStyle(.secondary)
+                Text("When hidden, existing shortcuts still work. Open Settings before hiding the icon if you need to change it back during this session.")
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
 

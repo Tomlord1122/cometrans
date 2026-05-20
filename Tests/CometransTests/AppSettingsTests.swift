@@ -25,12 +25,15 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.selectedProvider, .appleIntelligence)
         XCTAssertEqual(settings.shortcutActions.count, 3)
         XCTAssertTrue(settings.launchAtStartup)
+        XCTAssertFalse(settings.hideMenuBarIcon)
         XCTAssertEqual(userDefaults.bool(forKey: AppSettings.Keys.launchAtStartup), true)
 
         settings.selectedProvider = .claude
         settings.setAPIKey("  abc123  ", for: .claude)
+        settings.hideMenuBarIcon = true
 
         XCTAssertEqual(userDefaults.string(forKey: AppSettings.Keys.selectedProvider), "claude")
+        XCTAssertTrue(userDefaults.bool(forKey: AppSettings.Keys.hideMenuBarIcon))
         let apiKeys = userDefaults.dictionary(forKey: AppSettings.Keys.apiKeys) as? [String: String]
         XCTAssertEqual(apiKeys?["claude"], "abc123")
         XCTAssertEqual(settings.currentAPIKey, "abc123")
@@ -42,6 +45,7 @@ final class AppSettingsTests: XCTestCase {
         let savedAction = ShortcutAction(name: "Saved", keyCode: 12, modifiers: 256, prompt: "Prompt")
         userDefaults.set(try JSONEncoder().encode([savedAction]), forKey: AppSettings.Keys.shortcutActions)
         userDefaults.set(false, forKey: AppSettings.Keys.launchAtStartup)
+        userDefaults.set(true, forKey: AppSettings.Keys.hideMenuBarIcon)
 
         let settings = AppSettings(userDefaults: userDefaults)
 
@@ -50,6 +54,7 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.apiKeys[.grok], "two")
         XCTAssertEqual(settings.shortcutActions, [savedAction])
         XCTAssertFalse(settings.launchAtStartup)
+        XCTAssertTrue(settings.hideMenuBarIcon)
     }
 
     func testLaunchAtStartupIntegrationAndError() {

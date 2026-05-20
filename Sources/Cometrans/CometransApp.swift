@@ -63,6 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         controller.objectWillChange
             .receive(on: RunLoop.main)
             .sink { [weak self] in
+                self?.updateStatusItemVisibility(for: controller.settings)
                 self?.updateStatusItem(for: controller.state)
                 self?.rebuildMenu()
                 self?.updateHUD(for: controller.state)
@@ -70,7 +71,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
             .store(in: &cancellables)
 
+        updateStatusItemVisibility(for: controller.settings)
         updateStatusItem(for: controller.state)
+    }
+
+    private func updateStatusItemVisibility(for settings: AppSettings) {
+        statusItem?.isVisible = !settings.hideMenuBarIcon
     }
 
     private func updateStatusItem(for state: AppController.State) {
