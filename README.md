@@ -1,40 +1,57 @@
 # Cometrans
 
-Cometrans is a native macOS menu bar app for AI-powered text shortcuts. Select text anywhere, trigger a global shortcut, and Cometrans rewrites, translates, summarizes, or transforms the text and pastes the result back.
+Cometrans is a native macOS menu bar app for AI-powered text transformations. Select text in any app, press a global shortcut, and Cometrans sends the selection to your chosen AI provider before pasting the result back in place.
 
-## What Changed
+It is built for macOS 26+ and is designed for everyday translation, rewriting, summarization, grammar fixes, and custom prompt-based text workflows.
 
-- Dedicated settings window instead of editing inside the menu bar popover.
-- Shortcut management rebuilt around reusable templates and a persistent editor.
-- Core logic moved into a testable `CometransCore` module.
-- Build, release, signing, notarization, and coverage commands standardized.
-- GitHub Actions prepared for CI, releases, and Apple-signed distribution.
+## Features
 
-## Product Goals
+- Native macOS menu bar app with global keyboard shortcuts.
+- Works with selected text from other apps through the clipboard and Accessibility permissions.
+- Built-in shortcut templates for translation, writing improvement, grammar fixes, summaries, and professional tone rewrites.
+- Custom shortcuts with your own prompts, key combinations, provider overrides, and model choices.
+- Provider settings for OpenAI, Anthropic Claude, Google Gemini, xAI Grok, OpenCode Go, and Apple Intelligence.
+- Launch-at-login support and a dedicated settings window.
 
-- Fast global shortcuts for text workflows.
-- Simple path to add more actions later.
-- Public open source release quality, not a one-off personal utility.
-- Clean release artifacts for GitHub and Apple distribution.
+## Requirements
 
-## Current Shortcut Templates
+- macOS 26 or newer
+- Xcode Command Line Tools for local development
+- Accessibility permission for text capture and paste-back behavior
+- An API key for cloud providers, unless using Apple Intelligence
+
+## Getting Started
+
+Run from source:
+
+```bash
+swift run Cometrans
+```
+
+Build and test:
+
+```bash
+make build
+make test
+```
+
+After launching Cometrans:
+
+1. Open Cometrans from the menu bar.
+2. Grant Accessibility access in System Settings.
+3. Choose a default AI provider in the Providers tab.
+4. Add an API key if the provider requires one.
+5. Configure shortcuts in the Shortcuts tab.
+
+## Default Shortcuts
 
 - `Cmd+Shift+O`: Translate
 - `Cmd+Shift+I`: Improve Writing
 - `Cmd+Shift+G`: Fix Grammar
-- `Cmd+Shift+S`: Summarize
-- `Cmd+Shift+P`: Make Professional
 
-You can add blank shortcuts or start from templates in the Shortcuts tab.
+Additional templates are available for summarizing text and making text sound more professional.
 
-## Supported Providers
-
-- OpenAI
-- Anthropic
-- Google Gemini
-- xAI Grok
-
-## Local Commands
+## Development Commands
 
 ```bash
 make build
@@ -44,98 +61,29 @@ make dmg
 make release VERSION=0.1.0
 ```
 
-Equivalent scripts:
+Optional icon generation requires `librsvg`:
 
 ```bash
-./scripts/test_coverage.sh
-VERSION=0.1.0 ./build_dmg.sh
-./scripts/release.sh 0.1.0
+brew install librsvg
+make icon
 ```
-
-## Development Setup
-
-Requirements:
-
-- macOS 13 or newer
-- Xcode Command Line Tools
-- Optional for icon generation: `brew install librsvg`
-
-Run locally:
-
-```bash
-swift run Cometrans
-```
-
-## Installation Flow
-
-1. Download the latest DMG from GitHub Releases.
-2. Drag `Cometrans.app` to `/Applications`.
-3. Launch Cometrans.
-4. Grant Accessibility access in System Settings.
-5. Add an API key for your preferred provider.
-6. Configure or add shortcuts in the Settings window.
-
-## Release Flow
-
-Local maintainer flow:
-
-```bash
-make coverage
-VERSION=0.1.0 ./build_dmg.sh
-./scripts/release.sh 0.1.0
-```
-
-GitHub flow:
-
-- `release.yml` builds a DMG when run manually via `workflow_dispatch`.
-- `ci.yml` validates build and tests on every push and PR.
-
-## Apple Signing And Notarization
-
-The repo is ready for signing and notarization, but you still need to provide the Apple credentials and certificates yourself.
-
-Local environment variables:
-
-```bash
-export DEVELOPER_ID_APPLICATION="Developer ID Application: Your Name (TEAMID)"
-export APPLE_ID="you@example.com"
-export APPLE_APP_SPECIFIC_PASSWORD="app-specific-password"
-export APPLE_TEAM_ID="TEAMID"
-export NOTARIZE=1
-```
-
-GitHub secrets expected by `release.yml`:
-
-- `APPLE_DEVELOPER_ID_P12_BASE64`
-- `APPLE_DEVELOPER_ID_P12_PASSWORD`
-- `KEYCHAIN_PASSWORD`
-- `DEVELOPER_ID_APPLICATION`
-- `APPLE_ID`
-- `APPLE_APP_SPECIFIC_PASSWORD`
-- `APPLE_TEAM_ID`
-
-What you still need to do manually outside this repo:
-
-- Create/export the Developer ID Application certificate as `.p12`.
-- Generate an app-specific password for notarization.
-- Confirm the final bundle identifier you want to ship.
-- Validate the release on a clean Mac before public launch.
 
 ## Architecture
 
-The package is split intentionally:
+The package is split into three targets:
 
-- `CometransCore`: models, providers, settings logic, controller logic, testable contracts.
-- `CometransMacSupport`: live macOS integrations for clipboard, hotkeys, launch at login.
-- `Cometrans`: SwiftUI shell and settings UI.
+- `CometransCore`: models, settings, providers, controller logic, and testable contracts.
+- `CometransMacSupport`: live macOS integrations for clipboard, hotkeys, launch at login, and Apple Intelligence.
+- `Cometrans`: SwiftUI app shell, menu bar integration, and settings UI.
 
-This makes new shortcuts easy to add without touching the live platform adapters.
+This keeps provider and shortcut logic testable while isolating platform-specific macOS behavior.
 
 ## Privacy
 
-- API keys stay local on your Mac.
-- Text goes directly from Cometrans to the provider you selected.
-- No analytics, telemetry, or remote app backend is included.
+- API keys are stored locally on your Mac.
+- Selected text is sent only to the AI provider configured for the shortcut.
+- Apple Intelligence does not require an API key.
+- Cometrans does not include analytics, telemetry, or a remote backend.
 
 ## License
 
