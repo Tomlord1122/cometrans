@@ -50,6 +50,9 @@ let package = Package(
                 "UI/ShortcutRecorderView.swift",
                 "UI/AIProviderSettingsView.swift"
             ],
+            resources: [
+                .process("Resources")
+            ],
             linkerSettings: [
                 .linkedFramework("AppKit")
             ]

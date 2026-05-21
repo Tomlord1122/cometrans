@@ -47,6 +47,10 @@ rm -rf "$APP_BUNDLE"
 mkdir -p "$APP_BUNDLE/Contents/MacOS" "$APP_BUNDLE/Contents/Resources"
 cp "$BUILD_DIR/$EXECUTABLE_NAME" "$APP_BUNDLE/Contents/MacOS/$EXECUTABLE_NAME"
 
+if [[ -f "Sources/Cometrans/Resources/trigger.mp3" ]]; then
+  cp "Sources/Cometrans/Resources/trigger.mp3" "$APP_BUNDLE/Contents/Resources/trigger.mp3"
+fi
+
 if [[ -f "$RESOURCES_DIR/AppIcon.icns" ]]; then
   cp "$RESOURCES_DIR/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
   ICON_FILE="AppIcon"

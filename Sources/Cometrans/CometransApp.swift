@@ -34,6 +34,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let hudController = ProcessingHUDController()
     private var cancellables: Set<AnyCancellable> = []
     private var lastNotifiedState: AppController.State?
+    private var lastSoundedProcessingAction: String?
+    private lazy var triggerSound: NSSound? = {
+        if let url = Bundle.main.url(forResource: "trigger", withExtension: "mp3") {
+            return NSSound(contentsOf: url, byReference: false)
+        }
+
+        guard let url = Bundle.module.url(forResource: "trigger", withExtension: "mp3") else {
+            return nil
+        }
+
+        return NSSound(contentsOf: url, byReference: false)
+    }()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard let controller = Self.sharedController else { return }
@@ -199,10 +211,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func updateHUD(for state: AppController.State) {
         switch state {
         case .processing(let actionName):
+            playTriggerSoundIfNeeded(for: actionName)
             hudController.show(message: processingMessage(for: actionName))
         default:
+            lastSoundedProcessingAction = nil
             hudController.hide()
         }
+    }
+
+    private func playTriggerSoundIfNeeded(for actionName: String) {
+        guard lastSoundedProcessingAction != actionName else { return }
+
+        lastSoundedProcessingAction = actionName
+        triggerSound?.stop()
+        triggerSound?.currentTime = 0
+        triggerSound?.play()
     }
 
     private func notifyOrFallback(title: String, body: String, fallbackMessage: String?, sound: Bool) {
