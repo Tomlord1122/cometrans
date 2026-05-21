@@ -11,9 +11,14 @@ public final class LiveClipboardService: ClipboardServicing {
     }
 
     public func copySelectedText() -> String? {
+        if let selectedText = selectedTextFromAccessibility() {
+            return selectedText
+        }
+
         let originalValue = NSPasteboard.general.string(forType: .string)
 
         NSPasteboard.general.clearContents()
+        waitForHotKeyModifiersToClear()
         simulate(keyCode: 0x08)
         Thread.sleep(forTimeInterval: 0.1)
 
@@ -41,6 +46,66 @@ public final class LiveClipboardService: ClipboardServicing {
         guard let value else { return }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(value, forType: .string)
+    }
+
+    private func selectedTextFromAccessibility() -> String? {
+        if let app = NSWorkspace.shared.frontmostApplication {
+            let appElement = AXUIElementCreateApplication(app.processIdentifier)
+            if let text = selectedText(in: appElement) {
+                return text
+            }
+        }
+
+        let systemElement = AXUIElementCreateSystemWide()
+        return selectedText(in: systemElement)
+    }
+
+    private func selectedText(in element: AXUIElement) -> String? {
+        if let text = stringAttribute(kAXSelectedTextAttribute, from: element), !text.isEmpty {
+            return text
+        }
+
+        var focusedValue: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            element,
+            kAXFocusedUIElementAttribute as CFString,
+            &focusedValue
+        ) == .success, let focusedElement = focusedValue else {
+            return nil
+        }
+
+        guard CFGetTypeID(focusedElement) == AXUIElementGetTypeID() else {
+            return nil
+        }
+
+        let focusedAXElement = focusedElement as! AXUIElement
+        guard let text = stringAttribute(kAXSelectedTextAttribute, from: focusedAXElement), !text.isEmpty else {
+            return nil
+        }
+
+        return text
+    }
+
+    private func stringAttribute(_ attribute: String, from element: AXUIElement) -> String? {
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(element, attribute as CFString, &value) == .success else {
+            return nil
+        }
+
+        return value as? String
+    }
+
+    private func waitForHotKeyModifiersToClear() {
+        let deadline = Date().addingTimeInterval(0.35)
+        let modifiers: CGEventFlags = [.maskCommand, .maskShift, .maskControl, .maskAlternate]
+
+        while Date() < deadline {
+            if CGEventSource.flagsState(.hidSystemState).intersection(modifiers).isEmpty {
+                return
+            }
+
+            Thread.sleep(forTimeInterval: 0.01)
+        }
     }
 
     private func simulate(keyCode: CGKeyCode) {
