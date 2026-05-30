@@ -30,20 +30,15 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertFalse(settings.hideMenuBarIcon)
         XCTAssertEqual(userDefaults.bool(forKey: AppSettings.Keys.launchAtStartup), true)
 
-        settings.selectedProvider = .claude
-        settings.setAPIKey("  abc123  ", for: .claude)
+        settings.selectedProvider = .appleTranslation
         settings.hideMenuBarIcon = true
 
-        XCTAssertEqual(userDefaults.string(forKey: AppSettings.Keys.selectedProvider), "claude")
+        XCTAssertEqual(userDefaults.string(forKey: AppSettings.Keys.selectedProvider), "appleTranslation")
         XCTAssertTrue(userDefaults.bool(forKey: AppSettings.Keys.hideMenuBarIcon))
-        let apiKeys = userDefaults.dictionary(forKey: AppSettings.Keys.apiKeys) as? [String: String]
-        XCTAssertEqual(apiKeys?["claude"], "abc123")
-        XCTAssertEqual(settings.currentAPIKey, "abc123")
     }
 
-    func testLoadsSavedProviderAPIKeysAndActions() throws {
-        userDefaults.set("grok", forKey: AppSettings.Keys.selectedProvider)
-        userDefaults.set(["openai": "one", "grok": "two"], forKey: AppSettings.Keys.apiKeys)
+    func testLoadsSavedProviderAndActions() throws {
+        userDefaults.set("appleTranslation", forKey: AppSettings.Keys.selectedProvider)
         let savedAction = ShortcutAction(name: "Saved", keyCode: 12, modifiers: 256, prompt: "Prompt")
         userDefaults.set(try JSONEncoder().encode([savedAction]), forKey: AppSettings.Keys.shortcutActions)
         userDefaults.set(false, forKey: AppSettings.Keys.launchAtStartup)
@@ -51,9 +46,7 @@ final class AppSettingsTests: XCTestCase {
 
         let settings = AppSettings(userDefaults: userDefaults)
 
-        XCTAssertEqual(settings.selectedProvider, .grok)
-        XCTAssertEqual(settings.apiKeys[.openai], "one")
-        XCTAssertEqual(settings.apiKeys[.grok], "two")
+        XCTAssertEqual(settings.selectedProvider, .appleTranslation)
         XCTAssertEqual(settings.shortcutActions, [savedAction])
         XCTAssertFalse(settings.launchAtStartup)
         XCTAssertTrue(settings.hideMenuBarIcon)
@@ -97,12 +90,9 @@ final class AppSettingsTests: XCTestCase {
     }
 
     func testActionCrudAndLookup() {
-        let provider = StubAIProvider()
-        let factory = AIProviderFactory(providers: [.openai: provider])
-        let settings = AppSettings(userDefaults: userDefaults, providerFactory: factory)
+        let settings = AppSettings(userDefaults: userDefaults)
         let added = settings.addAction(from: ShortcutCatalog.templates[3])
 
-        XCTAssertTrue(settings.currentProvider as AnyObject === provider)
         XCTAssertEqual(settings.actionForHotKey(keyCode: added.keyCode, modifiers: added.modifiers)?.name, "Summarize")
 
         var updated = added
@@ -123,7 +113,6 @@ final class AppSettingsTests: XCTestCase {
     }
 
     func testShortcutChangeCallbackAndLegacyMigration() throws {
-        userDefaults.set("legacy-key", forKey: AppSettings.Keys.legacyAPIKey)
         userDefaults.set(UInt32(12), forKey: AppSettings.Keys.legacyShortcutKeyCode)
         userDefaults.set(UInt32(768), forKey: AppSettings.Keys.legacyShortcutModifiers)
         userDefaults.set("Legacy prompt", forKey: AppSettings.Keys.legacyPrompt)
@@ -134,9 +123,7 @@ final class AppSettingsTests: XCTestCase {
             callbackCount += 1
         }
 
-        XCTAssertEqual(settings.apiKeys[.openai], "legacy-key")
         XCTAssertEqual(settings.shortcutActions.first?.keyCode, 12)
-        XCTAssertNil(userDefaults.string(forKey: AppSettings.Keys.legacyAPIKey))
 
         settings.addAction(ShortcutAction(name: "Custom", keyCode: 0, modifiers: 256, prompt: "Prompt"))
         XCTAssertEqual(callbackCount, 1)
@@ -191,17 +178,5 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(decoded[0].prompt, "")
         XCTAssertEqual(decoded[0].providerOverride, .appleTranslation)
         XCTAssertEqual(decoded[1].providerOverride, .appleIntelligence)
-    }
-
-    func testLegacyMigrationKeepsExistingOpenAIKeyAndFallsBackPrompt() {
-        userDefaults.set(["openai": "existing"], forKey: AppSettings.Keys.apiKeys)
-        userDefaults.set("legacy-key", forKey: AppSettings.Keys.legacyAPIKey)
-        userDefaults.set(UInt32(31), forKey: AppSettings.Keys.legacyShortcutKeyCode)
-        userDefaults.set(UInt32(768), forKey: AppSettings.Keys.legacyShortcutModifiers)
-
-        let settings = AppSettings(userDefaults: userDefaults)
-
-        XCTAssertEqual(settings.apiKeys[.openai], "existing")
-        XCTAssertEqual(settings.shortcutActions.first?.prompt, ShortcutCatalog.templates.first?.prompt)
     }
 }

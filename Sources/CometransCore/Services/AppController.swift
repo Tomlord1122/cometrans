@@ -57,12 +57,6 @@ public final class AppController: ObservableObject {
         }
 
         let effectiveType = action.providerOverride ?? settings.selectedProvider
-        let apiKey = settings.apiKey(for: effectiveType)
-
-        if effectiveType.requiresAPIKey && apiKey.isEmpty {
-            state = .failed("Configure an API key for \(effectiveType.displayName).")
-            return
-        }
 
         state = .processing(action.name)
 
@@ -73,7 +67,7 @@ public final class AppController: ObservableObject {
 
         let provider = settings.provider(for: effectiveType)
 
-        provider.processText(text: text, apiKey: apiKey, instructions: action.prompt) { [weak self] result in
+        provider.processText(text: text, instructions: action.prompt) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self else { return }
 

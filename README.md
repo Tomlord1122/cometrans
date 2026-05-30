@@ -10,7 +10,7 @@ It is built for macOS 26+ and is designed for everyday translation, rewriting, s
 - Works with selected text from other apps through the clipboard and Accessibility permissions.
 - Built-in shortcut templates for translation, writing improvement, grammar fixes, summaries, and professional tone rewrites.
 - Custom shortcuts with your own prompts, key combinations, provider overrides, and model choices.
-- Provider settings for OpenAI, Anthropic Claude, Google Gemini, xAI Grok, OpenCode Go, and Apple Intelligence.
+- On-device providers using Apple Translation and Apple Intelligence.
 - Launch-at-login support and a dedicated settings window.
 
 ## Requirements

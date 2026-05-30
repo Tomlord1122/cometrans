@@ -7,14 +7,10 @@ import FoundationModels
 public final class AppleIntelligenceProvider: AIProvider {
     public static let identifier = "appleIntelligence"
     public static let displayName = "Apple Intelligence (on-device)"
-    public static let apiKeyURL = "https://www.apple.com/apple-intelligence/"
-    public static let apiKeyPlaceholder = ""
-
     public init() {}
 
     public func processText(
         text: String,
-        apiKey: String,
         instructions: String,
         completion: @escaping (Result<String, AIProviderError>) -> Void
     ) {

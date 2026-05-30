@@ -6,12 +6,9 @@ public final class AppSettings: ObservableObject {
 
     public enum Keys {
         public static let selectedProvider = "selectedProvider"
-        public static let apiKeys = "apiKeys"
-        public static let selectedModels = "selectedModels"
         public static let shortcutActions = "shortcutActions"
         public static let launchAtStartup = "launchAtStartup"
         public static let hideMenuBarIcon = "hideMenuBarIcon"
-        public static let legacyAPIKey = "apiKey"
         public static let legacyShortcutKeyCode = "shortcutKeyCode"
         public static let legacyShortcutModifiers = "shortcutModifiers"
         public static let legacyPrompt = "prompt"
@@ -21,20 +18,6 @@ public final class AppSettings: ObservableObject {
         didSet {
             objectWillChange.send()
             userDefaults.set(selectedProvider.rawValue, forKey: Keys.selectedProvider)
-        }
-    }
-
-    public var apiKeys: [AIProviderType: String] {
-        didSet {
-            objectWillChange.send()
-            saveAPIKeys()
-        }
-    }
-
-    public var selectedModels: [AIProviderType: String] {
-        didSet {
-            objectWillChange.send()
-            saveSelectedModels()
         }
     }
 
@@ -94,8 +77,6 @@ public final class AppSettings: ObservableObject {
             selectedProvider = .appleIntelligence
         }
 
-        apiKeys = Self.loadAPIKeys(from: userDefaults)
-        selectedModels = Self.loadSelectedModels(from: userDefaults)
         shortcutActions = Self.loadShortcutActions(from: userDefaults)
 
         if userDefaults.object(forKey: Keys.launchAtStartup) != nil {
@@ -112,28 +93,12 @@ public final class AppSettings: ObservableObject {
         synchronizeLaunchAtStartupPreference()
     }
 
-    public var currentAPIKey: String {
-        apiKeys[selectedProvider] ?? ""
-    }
-
-    public func model(for provider: AIProviderType) -> String {
-        selectedModels[provider] ?? provider.defaultModel
-    }
-
-    public func apiKey(for provider: AIProviderType) -> String {
-        apiKeys[provider] ?? ""
-    }
-
     public func provider(for type: AIProviderType) -> AIProvider {
-        providerFactory.resolve(type, model: model(for: type))
+        providerFactory.resolve(type)
     }
 
     public var currentProvider: AIProvider {
         provider(for: selectedProvider)
-    }
-
-    public func setModel(_ model: String, for provider: AIProviderType) {
-        selectedModels[provider] = model
     }
 
     public var enabledActions: [ShortcutAction] {
@@ -142,10 +107,6 @@ public final class AppSettings: ObservableObject {
 
     public var isLaunchAtStartupEnabled: Bool {
         launchAtLoginController.isEnabled
-    }
-
-    public func setAPIKey(_ key: String, for provider: AIProviderType) {
-        apiKeys[provider] = key.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     public func addAction(_ action: ShortcutAction) {
@@ -186,44 +147,11 @@ public final class AppSettings: ObservableObject {
         enabledActions.first { $0.keyCode == keyCode && $0.modifiers == modifiers }
     }
 
-    private func saveAPIKeys() {
-        let rawDictionary = Dictionary(uniqueKeysWithValues: apiKeys.map { ($0.key.rawValue, $0.value) })
-        userDefaults.set(rawDictionary, forKey: Keys.apiKeys)
-    }
-
-    private func saveSelectedModels() {
-        let rawDictionary = Dictionary(uniqueKeysWithValues: selectedModels.map { ($0.key.rawValue, $0.value) })
-        userDefaults.set(rawDictionary, forKey: Keys.selectedModels)
-    }
-
-    private static func loadSelectedModels(from userDefaults: UserDefaults) -> [AIProviderType: String] {
-        guard let rawDictionary = userDefaults.dictionary(forKey: Keys.selectedModels) as? [String: String] else {
-            return [:]
-        }
-        return rawDictionary.reduce(into: [:]) { partialResult, element in
-            if let provider = AIProviderType(rawValue: element.key) {
-                partialResult[provider] = element.value
-            }
-        }
-    }
-
     private func saveShortcutActions() {
         if let data = try? JSONEncoder().encode(shortcutActions) {
             userDefaults.set(data, forKey: Keys.shortcutActions)
         }
         onShortcutsChanged?()
-    }
-
-    private static func loadAPIKeys(from userDefaults: UserDefaults) -> [AIProviderType: String] {
-        guard let rawDictionary = userDefaults.dictionary(forKey: Keys.apiKeys) as? [String: String] else {
-            return [:]
-        }
-
-        return rawDictionary.reduce(into: [:]) { partialResult, element in
-            if let provider = AIProviderType(rawValue: element.key) {
-                partialResult[provider] = element.value
-            }
-        }
     }
 
     private static func loadShortcutActions(from userDefaults: UserDefaults) -> [ShortcutAction] {
@@ -254,13 +182,6 @@ public final class AppSettings: ObservableObject {
     }
 
     private func migrateLegacyValues() {
-        if let legacyKey = userDefaults.string(forKey: Keys.legacyAPIKey), !legacyKey.isEmpty {
-            if apiKeys[.openai]?.isEmpty ?? true {
-                apiKeys[.openai] = legacyKey
-            }
-            userDefaults.removeObject(forKey: Keys.legacyAPIKey)
-        }
-
         if userDefaults.object(forKey: Keys.legacyShortcutKeyCode) != nil {
             userDefaults.removeObject(forKey: Keys.legacyShortcutKeyCode)
             userDefaults.removeObject(forKey: Keys.legacyShortcutModifiers)

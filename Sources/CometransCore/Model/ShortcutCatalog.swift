@@ -61,7 +61,7 @@ public enum ShortcutCatalog {
             name: "Fix Grammar",
             keyCode: 5,
             modifiers: 768,
-            prompt: "Fix the grammar and spelling of the following text. Keep the same language and style. Output only the corrected text.",
+            prompt: "請將所選的文字翻譯成英文，如果文字已經是英文了，請修正文法以語意錯誤",
             isEnabled: false
         ),
         ShortcutTemplate(

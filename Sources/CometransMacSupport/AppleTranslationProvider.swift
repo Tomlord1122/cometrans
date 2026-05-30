@@ -10,14 +10,10 @@ import Translation
 public final class AppleTranslationProvider: AIProvider {
     public static let identifier = "appleTranslation"
     public static let displayName = "Apple Translation (on-device)"
-    public static let apiKeyURL = "https://www.apple.com/apple-intelligence/"
-    public static let apiKeyPlaceholder = ""
-
     public init() {}
 
     public func processText(
         text: String,
-        apiKey: String,
         instructions: String,
         completion: @escaping (Result<String, AIProviderError>) -> Void
     ) {

@@ -20,15 +20,7 @@ public final class AIProviderFactory {
     }
 
     public static var defaultBuilders: [AIProviderType: Builder] {
-        [
-            .openai: { OpenAIProvider(model: $0) },
-            .claude: { ClaudeProvider(model: $0) },
-            .gemini: { GeminiProvider(model: $0) },
-            .grok: { GrokProvider(model: $0) },
-            .opencode: { OpencodeProvider(model: $0) }
-            // Apple on-device providers are registered from CometransMacSupport at app startup,
-            // since they depend on Apple platform frameworks.
-        ]
+        [:]
     }
 
     public func register(_ type: AIProviderType, builder: @escaping Builder) {
@@ -43,7 +35,7 @@ public final class AIProviderFactory {
         if let builder = builders[type] {
             return builder(model)
         }
-        return builders[.openai]!(AIProviderType.openai.defaultModel)
+        return builders[.appleIntelligence]!(AIProviderType.appleIntelligence.defaultModel)
     }
 
     public func resolve(_ type: AIProviderType) -> AIProvider {

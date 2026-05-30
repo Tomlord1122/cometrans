@@ -18,13 +18,12 @@ final class AppControllerTests: XCTestCase {
 
     func testProcessSelectionFailureStates() {
         let provider = StubAIProvider()
-        let factory = AIProviderFactory(providers: [.openai: provider])
+        let factory = AIProviderFactory(providers: [.appleIntelligence: provider])
         let launchController = MockLaunchAtLoginController()
         let suiteName = UUID().uuidString
         let userDefaults = UserDefaults(suiteName: suiteName)!
         userDefaults.removePersistentDomain(forName: suiteName)
         let settings = AppSettings(userDefaults: userDefaults, providerFactory: factory, launchAtLoginController: launchController)
-        settings.selectedProvider = .openai
         let clipboard = MockClipboardService()
         let hotKeys = MockHotKeyManager()
         let controller = AppController(settings: settings, clipboardService: clipboard, hotKeyManager: hotKeys)
@@ -36,11 +35,6 @@ final class AppControllerTests: XCTestCase {
         XCTAssertEqual(controller.state, .failed("Accessibility permissions are required."))
 
         clipboard.permissionGranted = true
-        settings.setAPIKey("", for: .openai)
-        controller.processSelection(with: action)
-        XCTAssertEqual(controller.state, .failed("Configure an API key for OpenAI (GPT)."))
-
-        settings.setAPIKey("key", for: .openai)
         clipboard.copiedText = nil
         controller.processSelection(with: action)
         XCTAssertEqual(controller.state, .idle)
@@ -50,10 +44,8 @@ final class AppControllerTests: XCTestCase {
         let provider = StubAIProvider()
         let settings = AppSettings(
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!,
-            providerFactory: AIProviderFactory(providers: [.openai: provider])
+            providerFactory: AIProviderFactory(providers: [.appleIntelligence: provider])
         )
-        settings.selectedProvider = .openai
-        settings.setAPIKey("key", for: .openai)
         let clipboard = MockClipboardService()
         clipboard.copiedText = "Hola"
         let hotKeys = MockHotKeyManager()
@@ -69,7 +61,6 @@ final class AppControllerTests: XCTestCase {
             XCTAssertEqual(controller.state, .completed(action.name))
             XCTAssertEqual(clipboard.pastedTexts, ["Hello"])
             XCTAssertEqual(provider.receivedTexts, ["Hola"])
-            XCTAssertEqual(provider.receivedKeys, ["key"])
             XCTAssertEqual(provider.receivedInstructions, [action.prompt])
             controller.clearTransientState()
             XCTAssertEqual(controller.state, .idle)
@@ -84,9 +75,8 @@ final class AppControllerTests: XCTestCase {
         provider.nextResult = .failure(.rateLimited)
         let settings = AppSettings(
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!,
-            providerFactory: AIProviderFactory(providers: [.openai: provider])
+            providerFactory: AIProviderFactory(providers: [.appleIntelligence: provider])
         )
-        settings.setAPIKey("key", for: .openai)
         let clipboard = MockClipboardService()
         clipboard.copiedText = "Hola"
         let hotKeys = MockHotKeyManager()
@@ -110,9 +100,8 @@ final class AppControllerTests: XCTestCase {
         let provider = DelayedStubAIProvider()
         let settings = AppSettings(
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!,
-            providerFactory: AIProviderFactory(providers: [.openai: provider])
+            providerFactory: AIProviderFactory(providers: [.appleIntelligence: provider])
         )
-        settings.setAPIKey("key", for: .openai)
         let clipboard = MockClipboardService()
         clipboard.copiedText = "Hola"
         let controller = AppController(settings: settings, clipboardService: clipboard, hotKeyManager: MockHotKeyManager())

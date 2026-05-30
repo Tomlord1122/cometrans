@@ -1,36 +1,6 @@
 import Foundation
 @testable import CometransCore
 
-final class MockHTTPClient: HTTPClient {
-    var requests: [URLRequest] = []
-    var nextResult: Result<(Data, HTTPURLResponse), Error>?
-
-    func send(
-        _ request: URLRequest,
-        completion: @escaping (Result<(Data, HTTPURLResponse), Error>) -> Void
-    ) {
-        requests.append(request)
-        completion(nextResult ?? .failure(NSError(domain: "MockHTTPClient", code: -1)))
-    }
-}
-
-final class DeferredHTTPClient: HTTPClient {
-    var requests: [URLRequest] = []
-    private var completion: ((Result<(Data, HTTPURLResponse), Error>) -> Void)?
-
-    func send(
-        _ request: URLRequest,
-        completion: @escaping (Result<(Data, HTTPURLResponse), Error>) -> Void
-    ) {
-        requests.append(request)
-        self.completion = completion
-    }
-
-    func complete(with result: Result<(Data, HTTPURLResponse), Error>) {
-        completion?(result)
-    }
-}
-
 final class MockClipboardService: ClipboardServicing {
     var permissionGranted = true
     var copiedText: String?
@@ -88,22 +58,17 @@ final class MockLaunchAtLoginController: LaunchAtLoginControlling {
 final class StubAIProvider: AIProvider {
     static let identifier = "stub"
     static let displayName = "Stub"
-    static let apiKeyURL = "https://example.com"
-    static let apiKeyPlaceholder = "stub"
 
     var nextResult: Result<String, AIProviderError> = .success("done")
     var receivedTexts: [String] = []
-    var receivedKeys: [String] = []
     var receivedInstructions: [String] = []
 
     func processText(
         text: String,
-        apiKey: String,
         instructions: String,
         completion: @escaping (Result<String, AIProviderError>) -> Void
     ) {
         receivedTexts.append(text)
-        receivedKeys.append(apiKey)
         receivedInstructions.append(instructions)
         completion(nextResult)
     }
@@ -112,14 +77,11 @@ final class StubAIProvider: AIProvider {
 final class DelayedStubAIProvider: AIProvider {
     static let identifier = "delayed"
     static let displayName = "Delayed"
-    static let apiKeyURL = "https://example.com"
-    static let apiKeyPlaceholder = "delayed"
 
     var completion: ((Result<String, AIProviderError>) -> Void)?
 
     func processText(
         text: String,
-        apiKey: String,
         instructions: String,
         completion: @escaping (Result<String, AIProviderError>) -> Void
     ) {
@@ -133,33 +95,4 @@ enum TestError: Error, LocalizedError {
     var errorDescription: String? {
         "boom"
     }
-}
-
-final class MockURLProtocol: URLProtocol {
-    static var requestHandler: ((URLRequest) throws -> (URLResponse, Data?))?
-
-    override class func canInit(with request: URLRequest) -> Bool {
-        true
-    }
-
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        request
-    }
-
-    override func startLoading() {
-        guard let handler = Self.requestHandler else { return }
-
-        do {
-            let (response, data) = try handler(request)
-            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-            if let data {
-                client?.urlProtocol(self, didLoad: data)
-            }
-            client?.urlProtocolDidFinishLoading(self)
-        } catch {
-            client?.urlProtocol(self, didFailWithError: error)
-        }
-    }
-
-    override func stopLoading() {}
 }
